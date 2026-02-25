@@ -1,0 +1,15 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+redis>=5.0.1
+numpy>=1.26.0
+pydantic>=2.10.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# RedisVL for semantic routing
+redisvl>=0.3.0
+sentence-transformers>=2.3.1
+
+# Optional: For OpenAI embeddings
+# openai>=1.10.0
+
