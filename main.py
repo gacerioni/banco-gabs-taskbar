@@ -668,14 +668,19 @@ def search_taskbar(
     user_ctx: Optional[Dict] = None
 ) -> Dict[str, Any]:
     """
-    Main search function - Hybrid search (official Redis approach)
+    Main search function - 2-phase search (text → vector)
 
-    Single query that combines:
-    - Text search with synonym expansion (FT.SYNUPDATE)
+    Phase 1: Text search (exact + synonym + prefix)
+    - Exact match with synonym expansion (FT.SYNUPDATE)
     - Prefix matching (query*)
-    - Vector KNN search (semantic)
 
-    All executed in PARALLEL by Redis, merged automatically by score.
+    Phase 2: Vector search (only if Phase 1 < limit)
+    - KNN semantic search
+
+    This approach ensures:
+    - Text matches ALWAYS come first
+    - No "guessing" which type of match occurred
+    - Simple, predictable ranking
     """
     start_time = time.time()
     tracking_id = f"search_{int(time.time() * 1000)}"
@@ -683,10 +688,6 @@ def search_taskbar(
     # Prepare results container
     all_results = []
     seen_ids = set()
-
-    # Generate query embedding for vector search
-    query_embedding = embed_function(query)
-    query_vector_bytes = vector_to_bytes(query_embedding)
 
     # Search all indexes
     indexes = {
@@ -697,100 +698,43 @@ def search_taskbar(
 
     for idx_name, (doc_type, boost) in indexes.items():
         try:
-            # ===== HYBRID SEARCH (Text + Prefix + Vector in PARALLEL) =====
-            # Combines:
-            # 1. Text search with synonym expansion (automatic via FT.SYNUPDATE)
-            # 2. Prefix matching (query*)
-            # 3. Vector KNN search (semantic similarity)
-            #
-            # IMPORTANT: Using OR to ensure KNN always runs even if text search fails
-            # Format: (text_query | *)=>[KNN] means "text OR anything" + vector
+            # ===== PHASE 1: TEXT SEARCH (Exact + Synonym + Prefix) =====
+            # Query format: (query | query*)
+            # - "query" (exact) → expands synonyms ✅
+            # - "query*" (prefix) → does NOT expand synonyms, but matches prefixes ✅
+            text_query = f"@lang:{{{lang}}} @country:{{{country}}} ({query} | {query}*)"
 
-            # Get more results from Redis (we'll sort in Python by combined score)
-            # KNN returns top K by vector similarity, but we want to re-rank by text+vector
-            knn_limit = limit * 3  # Get 3x more to ensure we catch text matches
-
-            # Hybrid query combining:
-            # - Exact match (with synonym expansion): "query"
-            # - Prefix match: "query*"
-            # - Vector KNN search
-            # Using OR to ensure all methods are tried
-            hybrid_query = f"((@lang:{{{lang}}} @country:{{{country}}} ({query} | {query}*)) | (@lang:{{{lang}}} @country:{{{country}}}))=>[KNN {knn_limit} @embedding $vec AS vector_score]"
-
-            hybrid_result = redis_client.execute_command(
-                'FT.SEARCH', idx_name, hybrid_query,
-                'PARAMS', '2', 'vec', query_vector_bytes,
-                'LIMIT', '0', str(knn_limit),
-                'RETURN', '11', '$.id', '$.type', '$.title', '$.subtitle',
-                '$.deep_link', '$.url', '$.icon', '$.category', '$.popularity', '$.price', 'vector_score',
-                'DIALECT', '2'
+            text_result = redis_client.execute_command(
+                'FT.SEARCH', idx_name, text_query,
+                'LIMIT', '0', str(limit),
+                'RETURN', '10', '$.id', '$.type', '$.title', '$.subtitle',
+                '$.deep_link', '$.url', '$.icon', '$.category', '$.popularity', '$.price'
             )
 
-            # Parse hybrid search results
-            if hybrid_result[0] > 0:  # Has results
-                for i in range(1, len(hybrid_result), 2):
-                    doc_key = hybrid_result[i].decode('utf-8')
-                    fields = hybrid_result[i + 1]
+            # Parse text search results
+            if text_result[0] > 0:  # Has results
+                for i in range(1, len(text_result), 2):
+                    doc_key = text_result[i].decode('utf-8')
+                    fields = text_result[i + 1]
 
                     # Parse fields
                     doc_data = {}
-                    vector_score = None
                     for j in range(0, len(fields), 2):
                         field_name = fields[j].decode('utf-8')
-                        field_value = fields[j + 1]
+                        field_value = fields[j + 1].decode('utf-8') if fields[j + 1] else ''
 
-                        if field_name == 'vector_score':
-                            vector_score = float(field_value.decode('utf-8'))
+                        # Parse JSON values
+                        if field_value.startswith('['):
+                            doc_data[field_name.replace('$.', '')] = json.loads(field_value)[0] if json.loads(field_value) else ''
                         else:
-                            field_value_str = field_value.decode('utf-8') if field_value else ''
-                            # Parse JSON values
-                            if field_value_str.startswith('['):
-                                doc_data[field_name.replace('$.', '')] = json.loads(field_value_str)[0] if json.loads(field_value_str) else ''
-                            else:
-                                doc_data[field_name.replace('$.', '')] = field_value_str
+                            doc_data[field_name.replace('$.', '')] = field_value
 
                     doc_id = doc_data.get('id', '')
                     if doc_id and doc_id not in seen_ids:
                         seen_ids.add(doc_id)
 
-                        # Check if query matches text fields (title, description, keywords, aliases)
-                        # This helps us boost text matches over pure vector matches
-                        title = doc_data.get('title', '').lower()
-                        subtitle = doc_data.get('subtitle', '').lower()
-                        query_lower = query.lower()
-
-                        # Check for text match (exact, prefix, or in content)
-                        has_text_match = (
-                            query_lower in title or
-                            title.startswith(query_lower) or
-                            query_lower in subtitle or
-                            any(word.startswith(query_lower) for word in title.split())
-                        )
-
-                        # Also consider very low vector distance as potential synonym match
-                        # If vector_distance < 0.5, it's very likely a text/synonym match
-                        is_likely_text_match = has_text_match or (vector_score is not None and vector_score < 0.5)
-
-                        # Determine match type based on vector score AND text match
-                        # Low vector score (< 0.3) = good text/prefix match
-                        # High vector score (> 0.8) = primarily vector match
-                        if is_likely_text_match and vector_score is not None and vector_score < 0.5:
-                            match_type = 'hybrid-text'  # Text/prefix dominated
-                        elif vector_score is not None and vector_score > 0.8:
-                            match_type = 'hybrid-vector'  # Vector dominated
-                        else:
-                            match_type = 'hybrid'  # Balanced
-
-                        # Calculate score combining vector similarity, text match, and popularity
-                        # Cosine distance is 0-2, where 0 = identical, 2 = opposite
-                        # Convert to similarity: 1 - (distance / 2)
-                        similarity = 1.0 - (vector_score / 2.0) if vector_score is not None else 0.5
-                        base_score = similarity * 2.0
-
-                        # BOOST text matches significantly (including likely synonym matches)
-                        if is_likely_text_match:
-                            base_score += 3.0  # Big boost for text matches
-
+                        # Text matches get high base score
+                        base_score = 10.0  # Text matches are strong signals
                         popularity = float(doc_data.get('popularity', 50)) / 100.0
                         final_score = (base_score * boost) + (popularity * POPULARITY_WEIGHT)
 
@@ -805,9 +749,80 @@ def search_taskbar(
                             'score': final_score,
                             'price': doc_data.get('price'),
                             'highlights': [],
-                            'match_type': match_type,
-                            'vector_distance': vector_score
+                            'match_type': 'text'  # We KNOW it's text match!
                         })
+
+            # ===== PHASE 2: VECTOR SEARCH (only if text results < limit) =====
+            # Only run vector search if we don't have enough text results
+            if len(all_results) < limit:
+                # Generate query embedding (lazy - only if needed)
+                query_embedding = embed_function(query)
+                query_vector_bytes = vector_to_bytes(query_embedding)
+
+                # How many more results do we need?
+                remaining = limit - len(all_results)
+                vector_limit = remaining * 2  # Get 2x to have options
+
+                vector_query = f"(@lang:{{{lang}}} @country:{{{country}}})=>[KNN {vector_limit} @embedding $vec AS vector_score]"
+
+                vector_result = redis_client.execute_command(
+                    'FT.SEARCH', idx_name, vector_query,
+                    'PARAMS', '2', 'vec', query_vector_bytes,
+                    'SORTBY', 'vector_score', 'ASC',
+                    'LIMIT', '0', str(vector_limit),
+                    'RETURN', '11', '$.id', '$.type', '$.title', '$.subtitle',
+                    '$.deep_link', '$.url', '$.icon', '$.category', '$.popularity', '$.price', 'vector_score',
+                    'DIALECT', '2'
+                )
+
+                # Parse vector search results
+                if vector_result[0] > 0:
+                    for i in range(1, len(vector_result), 2):
+                        doc_key = vector_result[i].decode('utf-8')
+                        fields = vector_result[i + 1]
+
+                        # Parse fields
+                        doc_data = {}
+                        vector_score = None
+                        for j in range(0, len(fields), 2):
+                            field_name = fields[j].decode('utf-8')
+                            field_value = fields[j + 1]
+
+                            if field_name == 'vector_score':
+                                vector_score = float(field_value.decode('utf-8'))
+                            else:
+                                field_value_str = field_value.decode('utf-8') if field_value else ''
+                                # Parse JSON values
+                                if field_value_str.startswith('['):
+                                    doc_data[field_name.replace('$.', '')] = json.loads(field_value_str)[0] if json.loads(field_value_str) else ''
+                                else:
+                                    doc_data[field_name.replace('$.', '')] = field_value_str
+
+                        doc_id = doc_data.get('id', '')
+                        if doc_id and doc_id not in seen_ids:
+                            seen_ids.add(doc_id)
+
+                            # Vector matches get lower base score than text matches
+                            # Convert distance to similarity: 1 - (distance / 2)
+                            similarity = 1.0 - (vector_score / 2.0) if vector_score is not None else 0.5
+                            base_score = similarity * 5.0  # Lower than text (10.0)
+                            popularity = float(doc_data.get('popularity', 50)) / 100.0
+                            final_score = (base_score * boost) + (popularity * POPULARITY_WEIGHT)
+
+                            all_results.append({
+                                'type': doc_data.get('type', doc_type),
+                                'id': doc_id,
+                                'title': doc_data.get('title', ''),
+                                'subtitle': doc_data.get('subtitle', ''),
+                                'deep_link': doc_data.get('deep_link', doc_data.get('url', '')),
+                                'icon': doc_data.get('icon', ''),
+                                'category': doc_data.get('category', ''),
+                                'score': final_score,
+                                'price': doc_data.get('price'),
+                                'highlights': [],
+                                'match_type': 'vector',  # We KNOW it's vector match!
+                                'vector_distance': vector_score
+                            })
 
         except Exception as e:
             print(f"Error searching {idx_name}: {e}")

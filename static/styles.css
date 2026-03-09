@@ -504,17 +504,12 @@ body {
     vertical-align: middle;
 }
 
-.match-type-hybrid-text {
+.match-type-text {
     background: #4CAF50;
     color: white;
 }
 
-.match-type-hybrid {
-    background: #FF9800;
-    color: white;
-}
-
-.match-type-hybrid-vector {
+.match-type-vector {
     background: #9C27B0;
     color: white;
 }
@@ -532,11 +527,6 @@ body {
 
 .strategy-badge.strategy-exact {
     background: #4CAF50;
-    color: white;
-}
-
-.strategy-badge.strategy-hybrid {
-    background: #FF9800;
     color: white;
 }
 

@@ -225,26 +225,23 @@ function updateStats(query, data, clientLatency) {
     if (lastQueryEl) lastQueryEl.textContent = query;
     if (latencyEl) latencyEl.textContent = `${data.latency_ms}ms (server) + ${clientLatency}ms (client) = ${data.latency_ms + clientLatency}ms total`;
 
-    // Display match types (hybrid search)
+    // Display match types (2-phase search: text → vector)
     if (intentEl) {
         // Count match types
         const matchTypes = {};
         data.results.forEach(r => {
-            const type = r.match_type || 'hybrid';
+            const type = r.match_type || 'text';
             matchTypes[type] = (matchTypes[type] || 0) + 1;
         });
 
         let intentHtml = '';
 
         // Show badges for each match type found
-        if (matchTypes['hybrid-text']) {
-            intentHtml += `<span class="strategy-badge strategy-exact">✅ Text: ${matchTypes['hybrid-text']}</span> `;
+        if (matchTypes['text']) {
+            intentHtml += `<span class="strategy-badge strategy-exact">✅ Text: ${matchTypes['text']}</span> `;
         }
-        if (matchTypes['hybrid']) {
-            intentHtml += `<span class="strategy-badge strategy-hybrid">⚡ Hybrid: ${matchTypes['hybrid']}</span> `;
-        }
-        if (matchTypes['hybrid-vector']) {
-            intentHtml += `<span class="strategy-badge strategy-vector">🧠 Semantic: ${matchTypes['hybrid-vector']}</span> `;
+        if (matchTypes['vector']) {
+            intentHtml += `<span class="strategy-badge strategy-vector">🧠 Semantic: ${matchTypes['vector']}</span> `;
         }
 
         intentEl.innerHTML = intentHtml || '<span class="strategy-badge">No matches</span>';
@@ -254,19 +251,18 @@ function updateStats(query, data, clientLatency) {
 }
 
 function displaySearchResults(data) {
-    // Show search info with hybrid search metadata
+    // Show search info with 2-phase search metadata
     if (searchInfo) {
         // Count match types
         const matchTypes = {};
         data.results.forEach(r => {
-            const type = r.match_type || 'hybrid';
+            const type = r.match_type || 'text';
             matchTypes[type] = (matchTypes[type] || 0) + 1;
         });
 
         let matchInfo = [];
-        if (matchTypes['hybrid-text']) matchInfo.push(`✅ Text: ${matchTypes['hybrid-text']}`);
-        if (matchTypes['hybrid']) matchInfo.push(`⚡ Hybrid: ${matchTypes['hybrid']}`);
-        if (matchTypes['hybrid-vector']) matchInfo.push(`🧠 Semantic: ${matchTypes['hybrid-vector']}`);
+        if (matchTypes['text']) matchInfo.push(`✅ Text: ${matchTypes['text']}`);
+        if (matchTypes['vector']) matchInfo.push(`🧠 Semantic: ${matchTypes['vector']}`);
 
         searchInfo.innerHTML = `
             <p>
@@ -309,18 +305,16 @@ function createResultCard(item) {
 
     // Match type badge
     const matchTypeIcons = {
-        'hybrid-text': '✅',
-        'hybrid': '⚡',
-        'hybrid-vector': '🧠'
+        'text': '✅',
+        'vector': '🧠'
     };
     const matchTypeLabels = {
-        'hybrid-text': 'Text Match',
-        'hybrid': 'Hybrid',
-        'hybrid-vector': 'Semantic'
+        'text': 'Text Match',
+        'vector': 'Semantic'
     };
-    const matchType = item.match_type || 'hybrid';
-    const matchIcon = matchTypeIcons[matchType] || '⚡';
-    const matchLabel = matchTypeLabels[matchType] || 'Hybrid';
+    const matchType = item.match_type || 'text';
+    const matchIcon = matchTypeIcons[matchType] || '✅';
+    const matchLabel = matchTypeLabels[matchType] || 'Text';
 
     card.innerHTML = `
         <div class="result-header">

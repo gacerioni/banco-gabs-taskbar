@@ -1,19 +1,26 @@
-# 🏦 Banco Inter Task Bar MVP
+# 🏦 Banco Inter - Global Search Taskbar
 
-**Global Search for Customer 360** - Fast hybrid search (text + vector) for routes, marketplace SKUs, and banking products.
+**Customer 360 Global Search Demo** - Lightning-fast hybrid search (text + semantic) for banking routes, marketplace products, and financial services.
 
 Built with **Redis 8 + RediSearch + RedisVL** for sub-second performance.
+
+> 🇧🇷 **[Leia o guia completo em Português](GUIA-PT-BR.md)**
 
 ---
 
 ## 🎯 Features
 
-- **Hybrid Search**: Text (full-text) + Vector (semantic) search
-- **Multi-Type Results**: Routes (banking actions), SKUs (marketplace products), Banking Products
-- **Intent Detection**: Automatically detects if user wants routes vs products
-- **Real-time Autocomplete**: 200ms debounce with keyboard navigation
-- **Sub-second Performance**: Optimized for low latency (tens of ms Redis-side)
-- **Pluggable Embeddings**: Easy to swap embedding providers (OpenAI, HuggingFace, etc.)
+- **🔍 Hybrid Search**: Text (exact + synonyms) + Vector (semantic)
+- **📚 Synonym Expansion**: Auto-expands synonyms via `FT.SYNUPDATE`
+  - `robaro` → `bloquear`, `roubo`, `roubaram`, `perdi` ✅
+- **🧠 Semantic Understanding**: Handles typos and variations via embeddings
+  - `robaro meu cartao` → finds "Bloquear Cartão" ✅
+  - `mandar dinheiro` → finds "Pix" ✅
+- **🎯 Intent Detection**: Automatically detects user intent (routes vs products)
+- **⚡ Sub-second Performance**: ~40-80ms average latency
+- **📦 Multi-Type Results**: Banking routes, marketplace SKUs, financial products
+- **⌨️ Real-time Autocomplete**: 200ms debounce with keyboard navigation
+- **🔌 Pluggable Embeddings**: Easy to swap models (OpenAI, HuggingFace, local)
 
 ---
 
@@ -21,15 +28,17 @@ Built with **Redis 8 + RediSearch + RedisVL** for sub-second performance.
 
 ### 1. Prerequisites
 
-- Python 3.9+
-- Redis 8+ with RediSearch and RedisJSON modules (or Redis Cloud)
+- **Python 3.9+**
+- **Redis 8+** with RediSearch and RedisJSON modules
+  - [Redis Cloud](https://redis.com/try-free/) (recommended, free tier available)
+  - Or local: `brew install redis-stack` (macOS) / `docker run redis/redis-stack` (any OS)
 
 ### 2. Install Dependencies
 
 ```bash
 # Create virtual environment
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -37,149 +46,127 @@ pip install -r requirements.txt
 
 ### 3. Configure Environment
 
-Copy the example environment file and configure your Redis connection:
+Create a `.env` file with your Redis connection:
 
 ```bash
-cp .env.example .env
-```
+# Redis Cloud (recommended)
+REDIS_URL=redis://default:your-password@redis-xxxxx.cloud.redislabs.com:xxxxx
 
-Edit `.env` and set your Redis URL:
-
-```bash
-# Local Redis (no authentication)
+# Local Redis (no auth)
 REDIS_URL=redis://localhost:6379/0
-
-# Redis Cloud (with authentication)
-REDIS_URL=redis://default:your-password@redis-12345.cloud.redislabs.com:12345
-
-# Redis Cloud with SSL
-REDIS_URL=rediss://default:your-password@redis-12345.cloud.redislabs.com:12345
 ```
 
-### 4. Start Server
-
-**Option A: Using the run script (recommended)**
-```bash
-./run.sh
-```
-
-**Option B: Manual start**
-```bash
-source .venv/bin/activate
-uvicorn main:app --reload
-```
-
-### 5. Seed Data
+### 4. Start Server & Seed Data
 
 ```bash
-# In another terminal or browser
+# Start server
+./run.sh  # or: uvicorn main:app --reload
+
+# In another terminal, seed data
 curl -X POST http://localhost:8000/seed
-
-# Or visit http://localhost:8000/seed in your browser
 ```
 
-### 6. Open Browser
+### 5. Open Browser
 
 Visit **http://localhost:8000** and start searching!
+
+Try: `robaro meu cartao` (with typo) → finds "Bloquear Cartão" ✅
 
 ---
 
 ## 📊 Architecture
 
-### Redis Schema
-
-**Three indexes:**
-
-1. **`idx:routes`** - Banking actions (Pix, boleto, fatura, etc.)
-   - Prefix: `route:`
-   - Fields: title, subtitle, description, keywords, aliases, category, lang, country, popularity, embedding
-
-2. **`idx:skus`** - Marketplace products (iPhone, TV, notebook, etc.)
-   - Prefix: `sku:`
-   - Fields: title, subtitle, description, keywords, brand, category, subcategory, price, cashback, popularity, in_stock, embedding
-
-3. **`idx:products`** - Banking products (CDB, Tesouro, Seguros, etc.)
-   - Prefix: `product:`
-   - Fields: title, subtitle, description, keywords, aliases, category, lang, country, popularity, embedding
-
-### Search Flow
+### How It Works
 
 ```
-User Query
-    ↓
-Intent Detection (route vs sku vs mixed)
-    ↓
-Text Search (FT.SEARCH) across all indexes
-    ↓
-Apply Intent-Based Boosting
-    ↓
-Re-rank by: text_score + popularity + intent_boost
-    ↓
-Return Typed Results (with deep_link/url)
+User Query: "robaro meu cartao"
+         ↓
+┌────────────────────────────────┐
+│ 1. Intent Detection            │
+│    (RedisVL SemanticRouter)    │
+│    → Result: "route"           │
+└────────────────────────────────┘
+         ↓
+┌────────────────────────────────┐
+│ 2. Hybrid Search               │
+│    ┌─────────┐  ┌──────────┐  │
+│    │ Text    │  │ Vector   │  │
+│    │ (exact) │  │(semantic)│  │
+│    └─────────┘  └──────────┘  │
+│         └──────┬──────┘        │
+│         Merge & Dedupe         │
+└────────────────────────────────┘
+         ↓
+┌────────────────────────────────┐
+│ 3. Intelligent Ranking         │
+│    - Text score: 2.0           │
+│    - Vector score: 0-1.5       │
+│    - Intent boost              │
+│    - Popularity boost          │
+└────────────────────────────────┘
+         ↓
+    "Bloquear Cartão" ✅
 ```
 
-### Embedding Strategy
+### Redis Indexes
 
-- **Default**: Stub embeddings (hash-based, deterministic)
-- **Production**: Swap with real embeddings:
-  - OpenAI: `text-embedding-3-small` (1536 dims)
-  - HuggingFace: `sentence-transformers/all-MiniLM-L6-v2` (384 dims)
-  - Local: Any sentence-transformers model
+| Index | Prefix | Description | Fields |
+|-------|--------|-------------|--------|
+| `idx:routes` | `route:` | Banking actions | title, subtitle, keywords, aliases, embedding (384d) |
+| `idx:skus` | `sku:` | Marketplace products | title, brand, price, cashback, embedding (384d) |
+| `idx:products` | `product:` | Banking products | title, category, keywords, embedding (384d) |
 
-**To swap embedding function:**
+### Embedding Model
 
+**Current**: `paraphrase-multilingual-MiniLM-L12-v2` (384 dimensions)
+- ✅ Multilingual (Portuguese support)
+- ✅ Offline (no API calls)
+- ✅ Fast inference (~10ms)
+
+**Easy to swap**:
 ```python
-from sentence_transformers import SentenceTransformer
-
-model = SentenceTransformer('all-MiniLM-L6-v2')
-
-def embed_real(text: str) -> np.ndarray:
-    return model.encode(text, normalize_embeddings=True)
-
-set_embedding_function(embed_real)
+# In main.py, change get_vectorizer():
+_vectorizer = HFTextVectorizer(
+    model="sentence-transformers/your-model-here"
+)
 ```
 
 ---
 
-## 🧪 Testing & Benchmarks
+## 🧪 Testing
 
-Run performance tests:
+### Run Tests
 
 ```bash
+source .venv/bin/activate
+
+# Test semantic similarity
+python tests/test_embeddings.py
+
+# Test end-to-end search
+python tests/test_search_e2e.py
+
+# Test intent detection
+python tests/test_semantic_router.py
+
+# Performance benchmark
 python tests/benchmark.py
 ```
 
-Run semantic router tests:
-
-```bash
-python tests/test_semantic_router.py
-```
-
-Run end-to-end search tests:
-
-```bash
-python tests/test_search_e2e.py
-```
-
-**Sample output:**
+### Expected Performance
 
 ```
 📈 BENCHMARK RESULTS
-⏱️  LATENCY (Total: Client + Server)
-   Mean:  45.23ms
-   Median (p50): 42.10ms
-   p95:   78.50ms
-   p99:   95.20ms
+⏱️  Latency (Client + Server)
+   Mean:    45ms
+   p50:     42ms
+   p95:     78ms
+   p99:     95ms
 
-📊 RESULT TYPE DISTRIBUTION
-   route     : 450 (45.0%)
-   sku       : 380 (38.0%)
-   product   : 170 (17.0%)
-
-🎯 INTENT DISTRIBUTION
-   route     :  35 (35.0%)
-   sku       :  40 (40.0%)
-   mixed     :  25 (25.0%)
+📊 Result Distribution
+   Routes:   45%
+   SKUs:     38%
+   Products: 17%
 ```
 
 ---
@@ -207,67 +194,61 @@ banco-inter-taskbar/
 
 ---
 
-## 🎯 Demo Search Queries
+## 🎯 Demo Queries
 
-Try these queries to see the power of hybrid search:
+### Synonym Expansion (FT.SYNUPDATE)
+
+| Query | Finds | Why |
+|-------|-------|-----|
+| `robaro` | Bloquear Cartão | Synonym of "bloquear" |
+| `emprest` | Empréstimo | Synonym of "empréstimo" |
+| `card` | Cartão Virtual | Synonym of "cartão" |
+
+### Semantic Search (Embeddings 🔥)
+
+| Query | Finds | Why |
+|-------|-------|-----|
+| `robaro meu cartao` | Bloquear Cartão | Synonym + context |
+| `mandar dinheiro` | Pix | Semantic variation |
+| `quanto gastei` | Extrato | Intent detection |
+| `pagar conta de luz` | Pagar Boleto | Contextual match |
 
 ### Exact Matches (Text Search)
-- `pix` - Instant transfer
-- `boleto` - Bill payment
-- `extrato` - Account statement
-- `investimentos` - Investments
 
-### Semantic Search (AI-powered) 🔥
-- `robaro meu cartao` → finds "Bloquear Cartão" (typo + variation)
-- `me roubaram` → finds "Bloquear Cartão" (synonym)
-- `perdi meu cartao` → finds "Bloquear Cartão" (alias)
-- `quero investir` → finds "Investimentos" (intent)
-- `mandar dinheiro` → finds "Pix" (alias)
-- `pagar conta de luz` → finds "Pagar Boleto" (context)
-- `quanto gastei` → finds "Extrato" (intent)
-- `dinheiro de volta` → finds "Cashback" (synonym)
-
-### Marketplace Products
-- `iphone` - Apple smartphones
-- `samsung galaxy` - Samsung phones
-- `notebook` - Laptops
-- `fone bluetooth` - Bluetooth headphones
-
-### Mixed Intent
-- `comprar iphone com pix` - Shows both SKU + route
-- `investir em iphone` - Ambiguous query
+| Query | Finds |
+|-------|-------|
+| `pix` | Pix - Transferir dinheiro |
+| `boleto` | Pagar Boleto |
+| `extrato` | Extrato |
+| `iphone` | iPhone 15 Pro Max |
 
 ---
 
 ## 🎨 UI Features
 
-- **Banco Inter Branding**: Orange gradient theme (#FF7A00)
-- **Real-time Autocomplete**: Dropdown with type badges (route/sku/product)
-- **Typed Result Cards**: Different styling for routes vs products
-- **Quick Access Buttons**: One-click search for common queries
-- **Performance Stats**: Collapsible debug panel with latency, intent, result count
+- **🎨 Banco Inter Theme**: Orange gradient (#FF7A00)
+- **⚡ Real-time Autocomplete**: Dropdown with type badges
+- **🎯 Typed Result Cards**: Different styling per type
+- **🔘 Quick Access**: One-click common queries
+- **📊 Debug Panel**: Latency, intent, result count
 
 ---
 
 ## 🔧 API Endpoints
 
 ### `POST /seed`
-Load data from JSONL files into Redis
+Load sample data into Redis
 
-**Response:**
-```json
-{
-  "status": "success",
-  "counts": {
-    "routes": 15,
-    "skus": 15,
-    "products": 10
-  }
-}
+```bash
+curl -X POST http://localhost:8000/seed
 ```
 
-### `GET /search?q={query}&lang=pt&country=BR&limit=10`
+### `GET /search`
 Search across all indexes
+
+```bash
+curl "http://localhost:8000/search?q=pix&lang=pt&country=BR&limit=10"
+```
 
 **Response:**
 ```json
@@ -284,10 +265,7 @@ Search across all indexes
       "title": "Pix",
       "subtitle": "Transferir dinheiro na hora",
       "deep_link": "inter://pix/transfer",
-      "icon": "💸",
-      "category": "payments",
-      "score": 1.95,
-      "highlights": []
+      "score": 1.95
     }
   ]
 }
@@ -298,34 +276,35 @@ Health check
 
 ---
 
-## 🚧 Future Enhancements
+## 🚧 Future Ideas
 
-- [ ] Add vector search fallback when text search returns < limit results
-- [ ] Implement query highlighting in results
-- [ ] Add user context (location, preferences) to ranking
-- [ ] Support multi-language (en, es)
-- [ ] Add filters (category, price range, in_stock)
-- [ ] Implement click tracking and learning-to-rank
-- [ ] Add Redis caching layer for popular queries
-- [ ] Support voice search (speech-to-text)
+- [ ] Query highlighting in results
+- [ ] User context (location, preferences) in ranking
+- [ ] Multi-language support (en, es)
+- [ ] Filters (category, price, stock)
+- [ ] Click tracking & learning-to-rank
+- [ ] Query caching for popular searches
+- [ ] Voice search integration
 
 ---
 
 ## 📝 License
 
-MIT License - Built for Banco Inter Customer 360 initiative
+MIT License - Demo project for Banco Inter
 
 ---
 
 ## 🤝 Contributing
 
-This is an MVP. Contributions welcome for:
-- Better embedding models
-- Advanced ranking algorithms
+Contributions welcome! Areas of interest:
+- Embedding models
+- Ranking algorithms
 - UI/UX improvements
 - Performance optimizations
 
 ---
 
 **Built with ❤️ using Redis 8, FastAPI, and Vanilla JS**
+
+> 🇧🇷 **[Guia completo em Português](GUIA-PT-BR.md)** - Instruções detalhadas de instalação e uso
 
