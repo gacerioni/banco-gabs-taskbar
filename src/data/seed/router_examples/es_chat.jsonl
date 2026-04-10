@@ -1,0 +1,33 @@
+{"example": "¿cómo puedo invertir?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿cómo funciona pix?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿cómo funciona el cashback?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿cómo bloquear mi tarjeta?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿qué es pix?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿qué es cashback?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿cuál es la diferencia?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "¿por qué no funcionó?", "intent": "chat", "language": "es", "category": "question"}
+{"example": "necesito ayuda", "intent": "chat", "language": "es", "category": "help"}
+{"example": "no entiendo", "intent": "chat", "language": "es", "category": "help"}
+{"example": "ayúdame", "intent": "chat", "language": "es", "category": "help"}
+{"example": "¿puedes ayudar?", "intent": "chat", "language": "es", "category": "help"}
+{"example": "¿puedes explicar?", "intent": "chat", "language": "es", "category": "help"}
+{"example": "tengo una pregunta", "intent": "chat", "language": "es", "category": "help"}
+{"example": "tengo un problema", "intent": "chat", "language": "es", "category": "help"}
+{"example": "quiero hablar con alguien", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "quiero hablar con un agente", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "quiero hablar con el gerente", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "necesito soporte", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "atención al cliente", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "soporte", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "agente", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "gerente", "intent": "chat", "language": "es", "category": "escalation"}
+{"example": "hola", "intent": "chat", "language": "es", "category": "greeting"}
+{"example": "buenos días", "intent": "chat", "language": "es", "category": "greeting"}
+{"example": "buenas tardes", "intent": "chat", "language": "es", "category": "greeting"}
+{"example": "buenas noches", "intent": "chat", "language": "es", "category": "greeting"}
+{"example": "mi transferencia no funcionó", "intent": "chat", "language": "es", "category": "issue"}
+{"example": "me cobraron mal", "intent": "chat", "language": "es", "category": "issue"}
+{"example": "hay un error", "intent": "chat", "language": "es", "category": "issue"}
+{"example": "olvidé mi contraseña", "intent": "chat", "language": "es", "category": "issue"}
+{"example": "perdí mi tarjeta", "intent": "chat", "language": "es", "category": "issue"}
+

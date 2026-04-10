@@ -1,0 +1,42 @@
+{"example": "how do I invest?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "how does pix work?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "how does cashback work?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "how to block my card?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "how to cancel a purchase?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "what is pix?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "what is cashback?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "what is the difference?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "what are the fees?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "why didn't my transfer work?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "why was I charged?", "intent": "chat", "language": "en", "category": "question"}
+{"example": "I need help", "intent": "chat", "language": "en", "category": "help"}
+{"example": "I need help with investments", "intent": "chat", "language": "en", "category": "help"}
+{"example": "I don't understand", "intent": "chat", "language": "en", "category": "help"}
+{"example": "help me", "intent": "chat", "language": "en", "category": "help"}
+{"example": "can you help?", "intent": "chat", "language": "en", "category": "help"}
+{"example": "can you explain?", "intent": "chat", "language": "en", "category": "help"}
+{"example": "I have a question", "intent": "chat", "language": "en", "category": "help"}
+{"example": "I have a problem", "intent": "chat", "language": "en", "category": "help"}
+{"example": "I want to talk to someone", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "I want to talk to an agent", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "I want to talk to a manager", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "I need support", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "customer service", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "support", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "agent", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "manager", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "talk to human", "intent": "chat", "language": "en", "category": "escalation"}
+{"example": "hi", "intent": "chat", "language": "en", "category": "greeting"}
+{"example": "hello", "intent": "chat", "language": "en", "category": "greeting"}
+{"example": "good morning", "intent": "chat", "language": "en", "category": "greeting"}
+{"example": "good afternoon", "intent": "chat", "language": "en", "category": "greeting"}
+{"example": "good evening", "intent": "chat", "language": "en", "category": "greeting"}
+{"example": "how are you?", "intent": "chat", "language": "en", "category": "greeting"}
+{"example": "my transfer didn't work", "intent": "chat", "language": "en", "category": "issue"}
+{"example": "I was charged wrong", "intent": "chat", "language": "en", "category": "issue"}
+{"example": "there's an error", "intent": "chat", "language": "en", "category": "issue"}
+{"example": "I didn't receive my money", "intent": "chat", "language": "en", "category": "issue"}
+{"example": "I forgot my password", "intent": "chat", "language": "en", "category": "issue"}
+{"example": "I lost my card", "intent": "chat", "language": "en", "category": "issue"}
+{"example": "I was robbed", "intent": "chat", "language": "en", "category": "issue"}
+

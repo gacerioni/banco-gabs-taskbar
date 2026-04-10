@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Banco Inter Taskbar</title>
+    <link rel="stylesheet" href="/static/admin-styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🏦 Admin</h1>
+                <p>Banco Inter</p>
+            </div>
+            
+            <nav class="menu">
+                <a href="/admin" class="menu-item active">
+                    📊 Dashboard
+                </a>
+                <a href="/admin/routes" class="menu-item">
+                    🔗 Routes
+                </a>
+                <a href="/admin/products" class="menu-item">
+                    💼 Products
+                </a>
+                <a href="/admin/skus" class="menu-item">
+                    🛍️ SKUs
+                </a>
+                <hr>
+                <a href="/" class="menu-item">
+                    ← Voltar para busca
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="content">
+            <header class="page-header">
+                <h1>Dashboard</h1>
+                <p>Visão geral do sistema</p>
+            </header>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🔗</div>
+                    <div class="stat-info">
+                        <h3 id="routesCount">-</h3>
+                        <p>Routes</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">💼</div>
+                    <div class="stat-info">
+                        <h3 id="productsCount">-</h3>
+                        <p>Products</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🛍️</div>
+                    <div class="stat-info">
+                        <h3 id="skusCount">-</h3>
+                        <p>SKUs</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 id="totalCount">-</h3>
+                        <p>Total Items</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions-grid">
+                <div class="action-card">
+                    <h3>🔗 Gerenciar Routes</h3>
+                    <p>Adicione, edite ou remova rotas do aplicativo</p>
+                    <a href="/admin/routes" class="btn btn-primary">Abrir Routes</a>
+                </div>
+                
+                <div class="action-card">
+                    <h3>💼 Gerenciar Products</h3>
+                    <p>Gerencie produtos bancários e serviços</p>
+                    <a href="/admin/products" class="btn btn-primary">Abrir Products</a>
+                </div>
+                
+                <div class="action-card">
+                    <h3>🛍️ Gerenciar SKUs</h3>
+                    <p>Controle o catálogo do marketplace</p>
+                    <a href="/admin/skus" class="btn btn-primary">Abrir SKUs</a>
+                </div>
+                
+                <div class="action-card">
+                    <h3>🧠 Router Examples</h3>
+                    <p>Treinar detector de intenção (SEARCH vs CHAT)</p>
+                    <a href="/admin/router" class="btn btn-primary">Abrir Router</a>
+                </div>
+
+                <div class="action-card">
+                    <h3>🌱 Re-seed Database</h3>
+                    <p>Recarregar dados dos arquivos JSONL</p>
+                    <button onclick="reseed()" class="btn btn-warning">Executar Seed</button>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="header-actions" style="margin-top: 40px; margin-bottom: 20px;">
+                <h2>🗣️ Fila de Feedback de Usuários</h2>
+                <button onclick="loadFeedback()" class="btn btn-secondary">🔄 Atualizar Fila</button>
+            </div>
+
+            <div class="data-table" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                <table width="100%" style="text-align: left; color: #fff;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="padding: 10px;">Data</th>
+                            <th style="padding: 10px;">Query do Usuário</th>
+                            <th style="padding: 10px;">Intent Identificado</th>
+                            <th style="padding: 10px;">Intent Esperado</th>
+                            <th style="padding: 10px; text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackList">
+                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">Carregando fila...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Load stats on page load
+        async function loadStats() {
+            try {
+                const [routes, products, skus] = await Promise.all([
+                    fetch('/admin/api/routes?limit=1').then(r => r.json()),
+                    fetch('/admin/api/products?limit=1').then(r => r.json()),
+                    fetch('/admin/api/skus?limit=1').then(r => r.json())
+                ]);
+                
+                document.getElementById('routesCount').textContent = routes.total;
+                document.getElementById('productsCount').textContent = products.total;
+                document.getElementById('skusCount').textContent = skus.total;
+                document.getElementById('totalCount').textContent = routes.total + products.total + skus.total;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        async function reseed() {
+            if (!confirm('Isso irá recarregar todos os dados. Continuar?')) return;
+
+            try {
+                const response = await fetch('/seed', { method: 'POST' });
+                const data = await response.json();
+
+                const counts = data.documents_seeded || {};
+                alert(`✅ Seed completo!\n\n` +
+                      `Routes: ${counts.routes || 0}\n` +
+                      `Products: ${counts.products || 0}\n` +
+                      `SKUs: ${counts.skus || 0}\n` +
+                      `Router Examples: ${counts.router_examples || 0}\n\n` +
+                      `Tempo: ${data.elapsed_seconds}s`);
+                loadStats();
+            } catch (error) {
+                alert('❌ Erro ao executar seed: ' + error.message);
+            }
+        }
+
+        async function loadFeedback() {
+            try {
+                const response = await fetch('/admin/api/feedback');
+                const data = await response.json();
+
+                const list = document.getElementById('feedbackList');
+                if (!data.feedback || data.feedback.length === 0) {
+                    list.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">Nenhum feedback pendente na fila. 🎉</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = '';
+                data.feedback.forEach(item => {
+                    const date = new Date(item.timestamp * 1000).toLocaleString();
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+
+                    tr.innerHTML = `
+                        <td style="padding: 10px; font-size: 12px; color: #888;">${date}</td>
+                        <td style="padding: 10px; font-weight: bold;">"${item.query}"</td>
+                        <td style="padding: 10px;"><span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;">${item.detected_intent}</span></td>
+                        <td style="padding: 10px;"><span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">${item.expected_intent}</span></td>
+                        <td style="padding: 10px; text-align: right;">
+                            <button onclick='handleFeedbackAction(${JSON.stringify(item)}, "approve")' class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Aprovar & Retreinar</button>
+                            <button onclick='handleFeedbackAction(${JSON.stringify(item)}, "discard")' class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; background: #333;">Descartar</button>
+                        </td>
+                    `;
+                    list.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error loading feedback", error);
+            }
+        }
+
+        async function handleFeedbackAction(item, action) {
+            try {
+                const response = await fetch(`/admin/api/feedback/${action}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(item)
+                });
+                const result = await response.json();
+
+                if (action === 'approve') {
+                    alert('✅ Rota atualizada e Inteligência re-treinada com sucesso!\n\n(Aviso: recarregue o Admin para atualizar as estatísticas)');
+                }
+                loadFeedback();
+            } catch (error) {
+                alert('Erro ao processar feedback: ' + error.message);
+            }
+        }
+
+        loadStats();
+        loadFeedback();
+    </script>
+</body>
+</html>
+

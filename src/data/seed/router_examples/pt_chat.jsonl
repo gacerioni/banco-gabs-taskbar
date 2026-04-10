@@ -1,0 +1,161 @@
+{"example": "como faço pra investir?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como funciona o pix?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como funciona o cashback?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como bloquear meu cartão?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como cancelar uma compra?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como pagar um boleto?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como fazer uma transferência?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como funciona o empréstimo?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "o que é pix?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "o que é cashback?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "o que é CDB?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "o que é tesouro direto?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "o que significa isso?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual a diferença entre CDB e tesouro?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual a diferença entre débito e crédito?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual a taxa de juros?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual o limite do meu cartão?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "por que meu pix não funcionou?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "por que fui cobrado?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "por que não consigo fazer pix?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "por que meu cartão foi bloqueado?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "preciso de ajuda", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "preciso de ajuda com pix", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "preciso de ajuda com investimentos", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "não entendi", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "não consigo", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "me ajuda", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "me ajude", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "me explica", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "pode me ajudar?", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "pode explicar?", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "pode me explicar?", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "tenho uma dúvida", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "tenho dúvidas sobre investimentos", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "tenho um problema", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "estou com problema", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "estou com dificuldade", "intent": "chat", "language": "pt", "category": "help"}
+{"example": "quero falar com alguém", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "quero falar com atendente", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "quero falar com o gerente", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "quero falar com suporte", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "preciso de suporte", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "preciso falar com alguém", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "atendimento", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "suporte", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "atendente", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "gerente", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "falar com humano", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "falar com pessoa", "intent": "chat", "language": "pt", "category": "escalation"}
+{"example": "oi", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "olá", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "bom dia", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "boa tarde", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "boa noite", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "tudo bem?", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "como vai?", "intent": "chat", "language": "pt", "category": "greeting"}
+{"example": "preciso de informação", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "quero uma informação", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "meu pix não funcionou", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "fui cobrado errado", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "tem um erro na minha conta", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "recebi uma cobrança indevida", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "não recebi meu dinheiro", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "não consigo acessar", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "esqueci minha senha", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "perdi meu cartão", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "roubaram meu cartão", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "fui roubado", "intent": "chat", "language": "pt", "category": "issue"}
+{"example": "me fala sobre investimentos", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "me conta sobre cashback", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "explica o que é CDB", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "tire minhas dúvidas", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "quais são as vantagens?", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "quais são as taxas?", "intent": "chat", "language": "pt", "category": "info"}
+{"example": "tem alguma taxa?", "intent": "chat", "language": "pt", "category": "info"}
+
+{"example": "quero falar com o gerente", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "preciso de ajuda", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "me ajuda", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "fale comigo", "intent": "chat", "language": "pt", "category": "support"}
+
+
+
+{"example": "quero falar com um ser humano sobre meu financiamento", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "preciso de ajuda com meu empréstimo", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "tenho dúvidas sobre investimento", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como funciona o seguro?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "explica o pix pra mim", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "não entendi meu boleto", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "quero falar sobre minha conta", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "por que fui cobrado isso?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "quando vence minha fatura?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual é meu limite?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como aumentar limite?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "porque não consigo investir?", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "tô com problema no app", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "não consigo fazer pix", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "meu cartão não funciona", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "quero reclamar", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "isso tá errado", "intent": "chat", "language": "pt", "category": "complaint"}
+{"example": "cobrança indevida", "intent": "chat", "language": "pt", "category": "complaint"}
+{"example": "me explica essa taxa", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual a diferença entre conta corrente e poupança", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "como faço pra investir em ações", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "o que é tesouro direto", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "me tira uma dúvida", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "preciso de orientação", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "não sei como fazer isso", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "você pode me ajudar?", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "tô perdido aqui", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "onde encontro meu extrato", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "cadê meu dinheiro", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "sumiu uma transferência", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "não recebi o pix", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "quero contestar uma compra", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "fui vítima de fraude", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "alguém usou meu cartão", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "transação não autorizada", "intent": "chat", "language": "pt", "category": "complaint"}
+{"example": "como faço portabilidade de salário", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "quais são as taxas", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "tem taxa pra isso", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "quanto custa", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "é grátis?", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "vocês cobram", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "qual o horário de funcionamento", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "quando posso falar com alguém", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "preciso falar urgente", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "é urgente", "intent": "chat", "language": "pt", "category": "support"}
+{"example": "quero cancelar", "intent": "chat", "language": "pt", "category": "action"}
+{"example": "como cancelo minha conta", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "não quero mais", "intent": "chat", "language": "pt", "category": "action"}
+{"example": "quero sair do banco", "intent": "chat", "language": "pt", "category": "action"}
+{"example": "vocês têm loja física", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "onde fica a agência", "intent": "chat", "language": "pt", "category": "question"}
+{"example": "tem agência perto de mim", "intent": "chat", "language": "pt", "category": "question"}
+
+{"example": "quero falar com suporte tecnico", "intent": "chat", "language": "pt", "category": "test"}
+{"example": "bereganaits", "intent": "chat", "language": "pt", "category": "gabs"}
+{"example": "fazer pix de X para Y", "intent": "chat", "language": "pt", "category": "agentic"}
+{"example": "fazer pix de 50 reais para o joão", "intent": "chat", "language": "pt", "category": "agentic"}
+{"example": "manda um pix de 20 pra maria", "intent": "chat", "language": "pt", "category": "agentic"}
+{"example": "transfere 100 pro meu irmão", "intent": "chat", "language": "pt", "category": "agentic"}
+{"example": "manda um pix de 20 conto", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "manda um pix de 50 pila", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "transfere 100 conto", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "faz um pix de 30 reais", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "manda 100 conto pro meu irmão", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "manda um pix de 20 conto pro gabs", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "faz uma transferencia de 50 pro lucas", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "quero mandar 20 reais pra maria", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "envia 50 conto pra letícia", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "paga 30 reais no pix pro joão", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "deposita 100 reais na conta da ana", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "pagar a fatura de 1000 reais", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "antecipar 500 reais da fatura", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "bloqueia meu cartao de final 4321", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "aumentar meu limite pra 5 mil", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "pedir um emprestimo de 10 mil reais", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "simular um financiamento de 50 mil", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "quero investir 1000 reais em cdb", "intent": "chat", "language": "pt", "category": "transactional"}
+{"example": "aplica 500 reais no tesouro selic", "intent": "chat", "language": "pt", "category": "transactional"}

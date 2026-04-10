@@ -1,0 +1,285 @@
+{"example": "pix", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "boleto", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "extrato", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "fatura", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "investimentos", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "investir", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "empréstimo", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "emprestimo", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "crédito", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "credito", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "cartão", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "cartao", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "cashback", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "seguro", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "seguros", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "conta", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "saldo", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "transferência", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "transferencia", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "comprar iphone", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "comprar celular", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "comprar notebook", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "comprar tv", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "comprar fone", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "notebook dell", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "samsung galaxy", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "iphone 15", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "apple watch", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fone bluetooth", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "tv samsung", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "smart tv", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "xbox", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "playstation", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "ps5", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "quero um celular", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "quero um notebook", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "quero um iphone", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "preciso pagar conta", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "preciso pagar boleto", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "onde acho iphone", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "qual investimento", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "qual o melhor CDB", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "qual seguro", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "fazer pix", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "pagar boleto", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "ver extrato", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "ver fatura", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "fazer investimento", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "contratar seguro", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "pedir empréstimo", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "melhor celular", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "celular mais barato", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "notebook gamer", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "tv 4k", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fone com cancelamento de ruído", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "microondas", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "micro-ondas", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "geladeira", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fogão", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fogao", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "lavadora", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "máquina de lavar", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "maquina de lavar", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "aspirador", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "ar condicionado", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "ventilador", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "liquidificador", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "batedeira", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "cafeteira", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "ferro de passar", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "secador de cabelo", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "air fryer", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fritadeira elétrica", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fritadeira eletrica", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "tv led", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "televisão", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "televisao", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "monitor", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "teclado", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "mouse", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "webcam", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "impressora", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "roteador", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "modem", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "caixa de som", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "soundbar", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "fone de ouvido", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "headset", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "smartwatch", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "tablet", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "kindle", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "console", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "controle", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "jogo", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "game", "intent": "search", "language": "pt", "category": "shopping"}
+
+{"example": "bloquear cartão", "intent": "search", "language": "pt", "category": "action"}
+{"example": "bloque", "intent": "search", "language": "pt", "category": "partial"}
+{"example": "bloqueio", "intent": "search", "language": "pt", "category": "action"}
+{"example": "roubaram meu celular", "intent": "search", "language": "pt", "category": "emergency"}
+{"example": "robaro meu celula", "intent": "search", "language": "pt", "category": "emergency"}
+{"example": "perdi meu celular", "intent": "search", "language": "pt", "category": "emergency"}
+{"example": "roubo", "intent": "search", "language": "pt", "category": "emergency"}
+{"example": "roubaram", "intent": "search", "language": "pt", "category": "emergency"}
+{"example": "furtaram", "intent": "search", "language": "pt", "category": "emergency"}
+
+
+
+{"example": "recarga", "intent": "search", "language": "pt", "category": "action"}
+{"example": "pagar conta", "intent": "search", "language": "pt", "category": "action"}
+{"example": "ted", "intent": "search", "language": "pt", "category": "action"}
+{"example": "doc", "intent": "search", "language": "pt", "category": "action"}
+{"example": "saldo", "intent": "search", "language": "pt", "category": "info"}
+{"example": "extrato", "intent": "search", "language": "pt", "category": "info"}
+{"example": "limite disponível", "intent": "search", "language": "pt", "category": "info"}
+{"example": "fatura cartão", "intent": "search", "language": "pt", "category": "info"}
+{"example": "cashback", "intent": "search", "language": "pt", "category": "feature"}
+{"example": "pontos", "intent": "search", "language": "pt", "category": "feature"}
+{"example": "qr code", "intent": "search", "language": "pt", "category": "feature"}
+{"example": "pix cobrança", "intent": "search", "language": "pt", "category": "feature"}
+{"example": "open finance", "intent": "search", "language": "pt", "category": "feature"}
+{"example": "consórcio", "intent": "search", "language": "pt", "category": "product"}
+{"example": "câmbio", "intent": "search", "language": "pt", "category": "product"}
+{"example": "dólar", "intent": "search", "language": "pt", "category": "product"}
+{"example": "euro", "intent": "search", "language": "pt", "category": "product"}
+{"example": "ações", "intent": "search", "language": "pt", "category": "product"}
+{"example": "bolsa de valores", "intent": "search", "language": "pt", "category": "product"}
+{"example": "fundos", "intent": "search", "language": "pt", "category": "product"}
+{"example": "renda fixa", "intent": "search", "language": "pt", "category": "product"}
+{"example": "cdb", "intent": "search", "language": "pt", "category": "product"}
+{"example": "lci", "intent": "search", "language": "pt", "category": "product"}
+{"example": "lca", "intent": "search", "language": "pt", "category": "product"}
+{"example": "tesouro selic", "intent": "search", "language": "pt", "category": "product"}
+{"example": "tesouro ipca", "intent": "search", "language": "pt", "category": "product"}
+{"example": "previdência", "intent": "search", "language": "pt", "category": "product"}
+{"example": "plano de saúde", "intent": "search", "language": "pt", "category": "product"}
+{"example": "seguro auto", "intent": "search", "language": "pt", "category": "product"}
+{"example": "seguro residencial", "intent": "search", "language": "pt", "category": "product"}
+{"example": "cartao credito", "intent": "search", "language": "pt", "category": "product"}
+{"example": "cartao debito", "intent": "search", "language": "pt", "category": "product"}
+{"example": "conta corrente", "intent": "search", "language": "pt", "category": "product"}
+{"example": "conta poupança", "intent": "search", "language": "pt", "category": "product"}
+{"example": "conta pj", "intent": "search", "language": "pt", "category": "product"}
+{"example": "maquininha", "intent": "search", "language": "pt", "category": "product"}
+{"example": "crédito pessoal", "intent": "search", "language": "pt", "category": "product"}
+{"example": "financiamento carro", "intent": "search", "language": "pt", "category": "product"}
+{"example": "financiamento moto", "intent": "search", "language": "pt", "category": "product"}
+{"example": "financiamento imóvel", "intent": "search", "language": "pt", "category": "product"}
+{"example": "antecipação saque aniversário", "intent": "search", "language": "pt", "category": "product"}
+{"example": "portabilidade salário", "intent": "search", "language": "pt", "category": "action"}
+{"example": "segunda via boleto", "intent": "search", "language": "pt", "category": "action"}
+{"example": "código de barras", "intent": "search", "language": "pt", "category": "feature"}
+{"example": "comprovante", "intent": "search", "language": "pt", "category": "info"}
+{"example": "recibo", "intent": "search", "language": "pt", "category": "info"}
+{"example": "informe rendimentos", "intent": "search", "language": "pt", "category": "info"}
+{"example": "declaração imposto de renda", "intent": "search", "language": "pt", "category": "info"}
+{"example": "atualizar dados", "intent": "search", "language": "pt", "category": "action"}
+{"example": "alterar endereço", "intent": "search", "language": "pt", "category": "action"}
+{"example": "alterar telefone", "intent": "search", "language": "pt", "category": "action"}
+
+{"example": "palmeiras", "intent": "search", "language": "pt", "category": "search"}
+{"example": "corinthians", "intent": "search", "language": "pt", "category": "test"}
+{"example": "quero camisa do flamengo", "intent": "search", "language": "pt", "category": "test"}
+{"example": "santos", "intent": "search", "language": "pt", "category": "test"}
+{"example": "financiamento", "intent": "search", "language": "pt", "category": "search"}
+{"example": "consorcio", "intent": "search", "language": "pt", "category": "search"}
+{"example": "seguro de vida", "intent": "search", "language": "pt", "category": "search"}
+{"example": "pagar fatura", "intent": "search", "language": "pt", "category": "search"}
+{"example": "limite", "intent": "search", "language": "pt", "category": "search"}
+{"example": "aumentar limite", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cartão de crédito", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cartao de credito", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cartão virtual", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cartao virtual", "intent": "search", "language": "pt", "category": "search"}
+{"example": "investimento", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tesouro direto", "intent": "search", "language": "pt", "category": "search"}
+{"example": "acoes", "intent": "search", "language": "pt", "category": "search"}
+{"example": "home broker", "intent": "search", "language": "pt", "category": "search"}
+{"example": "fundos imobiliários", "intent": "search", "language": "pt", "category": "search"}
+{"example": "fii", "intent": "search", "language": "pt", "category": "search"}
+{"example": "previdencia", "intent": "search", "language": "pt", "category": "search"}
+{"example": "poupança", "intent": "search", "language": "pt", "category": "search"}
+{"example": "poupanca", "intent": "search", "language": "pt", "category": "search"}
+{"example": "receber pix", "intent": "search", "language": "pt", "category": "search"}
+{"example": "chave pix", "intent": "search", "language": "pt", "category": "search"}
+{"example": "pix copia e cola", "intent": "search", "language": "pt", "category": "search"}
+{"example": "informe de rendimentos", "intent": "search", "language": "pt", "category": "search"}
+{"example": "imposto de renda", "intent": "search", "language": "pt", "category": "search"}
+{"example": "irpf", "intent": "search", "language": "pt", "category": "search"}
+{"example": "portabilidade", "intent": "search", "language": "pt", "category": "search"}
+{"example": "trazer salario", "intent": "search", "language": "pt", "category": "search"}
+{"example": "conta empresarial", "intent": "search", "language": "pt", "category": "search"}
+{"example": "mei", "intent": "search", "language": "pt", "category": "search"}
+{"example": "antecipacao", "intent": "search", "language": "pt", "category": "search"}
+{"example": "antecipação", "intent": "search", "language": "pt", "category": "search"}
+{"example": "saque aniversario", "intent": "search", "language": "pt", "category": "search"}
+{"example": "fgts", "intent": "search", "language": "pt", "category": "search"}
+{"example": "renegociar divida", "intent": "search", "language": "pt", "category": "search"}
+{"example": "negociar", "intent": "search", "language": "pt", "category": "search"}
+{"example": "parcelar fatura", "intent": "search", "language": "pt", "category": "search"}
+{"example": "inter loop", "intent": "search", "language": "pt", "category": "search"}
+{"example": "gift card", "intent": "search", "language": "pt", "category": "search"}
+{"example": "celular", "intent": "search", "language": "pt", "category": "search"}
+{"example": "dolar", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cambio", "intent": "search", "language": "pt", "category": "search"}
+{"example": "remessa", "intent": "search", "language": "pt", "category": "search"}
+{"example": "global account", "intent": "search", "language": "pt", "category": "search"}
+{"example": "conta global", "intent": "search", "language": "pt", "category": "search"}
+{"example": "iphone", "intent": "search", "language": "pt", "category": "shopping"}
+{"example": "smartphone", "intent": "search", "language": "pt", "category": "search"}
+{"example": "celular", "intent": "search", "language": "pt", "category": "search"}
+{"example": "motorola", "intent": "search", "language": "pt", "category": "search"}
+{"example": "xiaomi", "intent": "search", "language": "pt", "category": "search"}
+{"example": "notebook", "intent": "search", "language": "pt", "category": "search"}
+{"example": "laptop", "intent": "search", "language": "pt", "category": "search"}
+{"example": "macbook", "intent": "search", "language": "pt", "category": "search"}
+{"example": "computador", "intent": "search", "language": "pt", "category": "search"}
+{"example": "pc gamer", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tv", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tv oled", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tv qled", "intent": "search", "language": "pt", "category": "search"}
+{"example": "home theater", "intent": "search", "language": "pt", "category": "search"}
+{"example": "ps4", "intent": "search", "language": "pt", "category": "search"}
+{"example": "nintendo switch", "intent": "search", "language": "pt", "category": "search"}
+{"example": "videogame", "intent": "search", "language": "pt", "category": "search"}
+{"example": "jogos", "intent": "search", "language": "pt", "category": "search"}
+{"example": "refrigerador", "intent": "search", "language": "pt", "category": "search"}
+{"example": "freezer", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cooktop", "intent": "search", "language": "pt", "category": "search"}
+{"example": "forno", "intent": "search", "language": "pt", "category": "search"}
+{"example": "coifa", "intent": "search", "language": "pt", "category": "search"}
+{"example": "lava e seca", "intent": "search", "language": "pt", "category": "search"}
+{"example": "secadora", "intent": "search", "language": "pt", "category": "search"}
+{"example": "lava louças", "intent": "search", "language": "pt", "category": "search"}
+{"example": "lava-louças", "intent": "search", "language": "pt", "category": "search"}
+{"example": "climatizador", "intent": "search", "language": "pt", "category": "search"}
+{"example": "aquecedor", "intent": "search", "language": "pt", "category": "search"}
+{"example": "fritadeira", "intent": "search", "language": "pt", "category": "search"}
+{"example": "nespresso", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tres coracoes", "intent": "search", "language": "pt", "category": "search"}
+{"example": "dolce gusto", "intent": "search", "language": "pt", "category": "search"}
+{"example": "aspirador robo", "intent": "search", "language": "pt", "category": "search"}
+{"example": "aspirador de pó", "intent": "search", "language": "pt", "category": "search"}
+{"example": "secador", "intent": "search", "language": "pt", "category": "search"}
+{"example": "chapinha", "intent": "search", "language": "pt", "category": "search"}
+{"example": "babyliss", "intent": "search", "language": "pt", "category": "search"}
+{"example": "headphone", "intent": "search", "language": "pt", "category": "search"}
+{"example": "airpods", "intent": "search", "language": "pt", "category": "search"}
+{"example": "galaxy buds", "intent": "search", "language": "pt", "category": "search"}
+{"example": "jbl", "intent": "search", "language": "pt", "category": "search"}
+{"example": "bluetooth", "intent": "search", "language": "pt", "category": "search"}
+{"example": "ipad", "intent": "search", "language": "pt", "category": "search"}
+{"example": "galaxy tab", "intent": "search", "language": "pt", "category": "search"}
+{"example": "e-reader", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tenis", "intent": "search", "language": "pt", "category": "search"}
+{"example": "tênis", "intent": "search", "language": "pt", "category": "search"}
+{"example": "sapato", "intent": "search", "language": "pt", "category": "search"}
+{"example": "roupa", "intent": "search", "language": "pt", "category": "search"}
+{"example": "camisa", "intent": "search", "language": "pt", "category": "search"}
+{"example": "camiseta", "intent": "search", "language": "pt", "category": "search"}
+{"example": "calça", "intent": "search", "language": "pt", "category": "search"}
+{"example": "calca", "intent": "search", "language": "pt", "category": "search"}
+{"example": "jaqueta", "intent": "search", "language": "pt", "category": "search"}
+{"example": "casaco", "intent": "search", "language": "pt", "category": "search"}
+{"example": "mochila", "intent": "search", "language": "pt", "category": "search"}
+{"example": "bolsa", "intent": "search", "language": "pt", "category": "search"}
+{"example": "perfume", "intent": "search", "language": "pt", "category": "search"}
+{"example": "maquiagem", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cosmeticos", "intent": "search", "language": "pt", "category": "search"}
+{"example": "beleza", "intent": "search", "language": "pt", "category": "search"}
+{"example": "creme", "intent": "search", "language": "pt", "category": "search"}
+{"example": "shampoo", "intent": "search", "language": "pt", "category": "search"}
+{"example": "pneu", "intent": "search", "language": "pt", "category": "search"}
+{"example": "oleo", "intent": "search", "language": "pt", "category": "search"}
+{"example": "bateria", "intent": "search", "language": "pt", "category": "search"}
+{"example": "acessorios carro", "intent": "search", "language": "pt", "category": "search"}
+{"example": "moto", "intent": "search", "language": "pt", "category": "search"}
+{"example": "cdb inter", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "cdb liquidez", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "investir cdb", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "aplicar cdb", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "rentabilidade cdb", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "cdb mais limite", "intent": "search", "language": "pt", "category": "banking"}
+{"example": "pokopia", "intent": "search", "language": "pt", "category": "user_feedback"}
+{"example": "pokopia", "intent": "search", "language": "pt", "category": "user_feedback"}

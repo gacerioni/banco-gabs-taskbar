@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routes Manager - Admin</title>
+    <link rel="stylesheet" href="/static/admin-styles.css">
+    <style>
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🏦 Admin</h1>
+                <p>Banco Inter</p>
+            </div>
+            <nav class="menu">
+                <a href="/admin" class="menu-item">📊 Dashboard</a>
+                <a href="/admin/routes" class="menu-item active">🔗 Routes</a>
+                <a href="/admin/products" class="menu-item">💼 Products</a>
+                <a href="/admin/skus" class="menu-item">🛍️ SKUs</a>
+                <hr>
+                <a href="/" class="menu-item">← Voltar</a>
+            </nav>
+        </aside>
+        
+        <main class="content">
+            <div class="breadcrumb">
+                <a href="/">🏠 Home</a> / <a href="/admin">Admin</a> / Routes
+            </div>
+
+            <header class="page-header">
+                <h1>Routes Manager</h1>
+                <p>Gerenciar rotas do aplicativo</p>
+            </header>
+            
+            <div class="table-container">
+                <div style="margin-bottom: 20px; display: flex; justify-content: space-between;">
+                    <h2>Lista de Routes (<span id="totalRoutes">0</span>)</h2>
+                    <button class="btn btn-primary" onclick="createNew()">➕ Nova Route</button>
+                </div>
+                
+                <table id="routesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Categoria</th>
+                            <th>Popularidade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routesBody">
+                        <tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para Create/Edit -->
+    <div id="modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nova Route</h2>
+                <button onclick="closeModal()" class="btn-close">×</button>
+            </div>
+            <form id="routeForm" onsubmit="saveRoute(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>ID *</label>
+                        <input type="text" name="id" id="routeId" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Título *</label>
+                        <input type="text" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle *</label>
+                        <input type="text" name="subtitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <input type="text" name="icon" placeholder="🔗">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Descrição</label>
+                        <textarea name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria *</label>
+                        <input type="text" name="category" required placeholder="payments, cards, transfers...">
+                    </div>
+                    <div class="form-group">
+                        <label>Deep Link</label>
+                        <input type="text" name="deep_link" placeholder="inter://...">
+                    </div>
+                    <div class="form-group">
+                        <label>Popularidade (0-100)</label>
+                        <input type="number" name="popularity" min="0" max="100" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Idioma</label>
+                        <select name="lang">
+                            <option value="pt">PT</option>
+                            <option value="en">EN</option>
+                            <option value="es">ES</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Keywords (separadas por vírgula)</label>
+                        <input type="text" name="keywords" placeholder="pix, transferencia, dinheiro">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Aliases (texto livre)</label>
+                        <input type="text" name="aliases" placeholder="transferir dinheiro enviar pix">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Synonyms (separados por vírgula)</label>
+                        <input type="text" name="synonyms" placeholder="pix, transferir, enviar">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeModal()" class="btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        async function loadRoutes() {
+            try {
+                const response = await fetch('/admin/api/routes?limit=100');
+                const data = await response.json();
+                
+                document.getElementById('totalRoutes').textContent = data.total;
+                
+                const tbody = document.getElementById('routesBody');
+                tbody.innerHTML = data.items.map(route => `
+                    <tr>
+                        <td>${route.id}</td>
+                        <td>${route.icon} ${route.title}</td>
+                        <td>${route.category}</td>
+                        <td>${route.popularity}</td>
+                        <td>
+                            <button class="btn btn-sm btn-success" onclick="editRoute('${route.id}')">✏️ Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRoute('${route.id}')">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading routes:', error);
+                alert('Erro ao carregar routes: ' + error.message);
+            }
+        }
+        
+        let editMode = false;
+        let currentId = null;
+
+        function createNew() {
+            editMode = false;
+            currentId = null;
+            document.getElementById('modalTitle').textContent = 'Nova Route';
+            document.getElementById('routeForm').reset();
+            document.getElementById('routeId').readOnly = false;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        async function editRoute(id) {
+            editMode = true;
+            currentId = id;
+            document.getElementById('modalTitle').textContent = `Editar Route: ${id}`;
+            document.getElementById('routeId').readOnly = true;
+
+            try {
+                const response = await fetch(`/admin/api/routes/${id}`);
+                const route = await response.json();
+
+                // Fill form
+                const form = document.getElementById('routeForm');
+                Object.keys(route).forEach(key => {
+                    const input = form.elements[key];
+                    if (input) {
+                        if (Array.isArray(route[key])) {
+                            input.value = route[key].join(', ');
+                        } else {
+                            input.value = route[key] || '';
+                        }
+                    }
+                });
+
+                document.getElementById('modal').style.display = 'flex';
+            } catch (error) {
+                alert('Erro ao carregar route: ' + error.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        async function saveRoute(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('routeForm');
+            const formData = new FormData(form);
+            const route = {};
+
+            // Convert form data to object
+            for (let [key, value] of formData.entries()) {
+                if (key === 'keywords' || key === 'synonyms') {
+                    route[key] = value ? value.split(',').map(s => s.trim()) : [];
+                } else if (key === 'popularity') {
+                    route[key] = parseInt(value);
+                } else {
+                    route[key] = value;
+                }
+            }
+
+            route.type = 'route';
+            route.country = 'BR';
+
+            try {
+                let response;
+                if (editMode) {
+                    response = await fetch(`/admin/api/routes/${currentId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(route)
+                    });
+                } else {
+                    response = await fetch('/admin/api/routes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(route)
+                    });
+                }
+
+                const data = await response.json();
+                alert(editMode ? 'Route atualizada com sucesso!' : 'Route criada com sucesso!');
+                closeModal();
+                loadRoutes();
+            } catch (error) {
+                alert('Erro ao salvar: ' + error.message);
+            }
+        }
+        
+        async function deleteRoute(id) {
+            if (!confirm(`Deletar route ${id}?`)) return;
+            
+            try {
+                const response = await fetch(`/admin/api/routes/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                alert(data.message);
+                loadRoutes();
+            } catch (error) {
+                alert('Erro ao deletar: ' + error.message);
+            }
+        }
+        
+        loadRoutes();
+    </script>
+</body>
+</html>
+

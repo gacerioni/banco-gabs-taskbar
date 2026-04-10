@@ -1,0 +1,156 @@
+{"example": "pix", "intent": "search", "language": "en", "category": "banking"}
+{"example": "bill payment", "intent": "search", "language": "en", "category": "banking"}
+{"example": "pay bill", "intent": "search", "language": "en", "category": "banking"}
+{"example": "statement", "intent": "search", "language": "en", "category": "banking"}
+{"example": "balance", "intent": "search", "language": "en", "category": "banking"}
+{"example": "investments", "intent": "search", "language": "en", "category": "banking"}
+{"example": "invest", "intent": "search", "language": "en", "category": "banking"}
+{"example": "loan", "intent": "search", "language": "en", "category": "banking"}
+{"example": "credit", "intent": "search", "language": "en", "category": "banking"}
+{"example": "card", "intent": "search", "language": "en", "category": "banking"}
+{"example": "invoice", "intent": "search", "language": "en", "category": "banking"}
+{"example": "cashback", "intent": "search", "language": "en", "category": "banking"}
+{"example": "insurance", "intent": "search", "language": "en", "category": "banking"}
+{"example": "transfer", "intent": "search", "language": "en", "category": "banking"}
+{"example": "buy iphone", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "buy phone", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "buy laptop", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "buy tv", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "buy headphones", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "dell laptop", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "samsung galaxy", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "iphone 15", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "apple watch", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "bluetooth headphones", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "samsung tv", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "smart tv", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "I want a phone", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "I want a laptop", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "I need to pay bill", "intent": "search", "language": "en", "category": "banking"}
+{"example": "where to find iphone", "intent": "search", "language": "en", "category": "shopping"}
+{"example": "best investment", "intent": "search", "language": "en", "category": "banking"}
+{"example": "best insurance", "intent": "search", "language": "en", "category": "banking"}
+{"example": "make transfer", "intent": "search", "language": "en", "category": "banking"}
+{"example": "pay invoice", "intent": "search", "language": "en", "category": "banking"}
+{"example": "check balance", "intent": "search", "language": "en", "category": "banking"}
+{"example": "apply for loan", "intent": "search", "language": "en", "category": "banking"}
+
+{"example": "how do I invest in crypto", "intent": "search", "language": "en", "category": "investments"}
+{"example": "crypto investment", "intent": "search", "language": "en", "category": "investments"}
+{"example": "buy cryptocurrency", "intent": "search", "language": "en", "category": "investments"}
+{"example": "bitcoin", "intent": "search", "language": "en", "category": "investments"}
+{"example": "ethereum", "intent": "search", "language": "en", "category": "investments"}
+{"example": "invest in stocks", "intent": "search", "language": "en", "category": "investments"}
+{"example": "how to invest", "intent": "search", "language": "en", "category": "investments"}
+
+
+{"example": "personal loan", "intent": "search", "language": "en", "category": "search"}
+{"example": "financing", "intent": "search", "language": "en", "category": "search"}
+{"example": "life insurance", "intent": "search", "language": "en", "category": "search"}
+{"example": "home insurance", "intent": "search", "language": "en", "category": "search"}
+{"example": "credit limit", "intent": "search", "language": "en", "category": "search"}
+{"example": "increase limit", "intent": "search", "language": "en", "category": "search"}
+{"example": "credit card", "intent": "search", "language": "en", "category": "search"}
+{"example": "virtual card", "intent": "search", "language": "en", "category": "search"}
+{"example": "investment", "intent": "search", "language": "en", "category": "search"}
+{"example": "fixed income", "intent": "search", "language": "en", "category": "search"}
+{"example": "cdb", "intent": "search", "language": "en", "category": "search"}
+{"example": "treasury", "intent": "search", "language": "en", "category": "search"}
+{"example": "stocks", "intent": "search", "language": "en", "category": "search"}
+{"example": "stock market", "intent": "search", "language": "en", "category": "search"}
+{"example": "savings", "intent": "search", "language": "en", "category": "search"}
+{"example": "savings account", "intent": "search", "language": "en", "category": "search"}
+{"example": "send money", "intent": "search", "language": "en", "category": "search"}
+{"example": "wire transfer", "intent": "search", "language": "en", "category": "search"}
+{"example": "receipt", "intent": "search", "language": "en", "category": "search"}
+{"example": "income tax", "intent": "search", "language": "en", "category": "search"}
+{"example": "business account", "intent": "search", "language": "en", "category": "search"}
+{"example": "corporate account", "intent": "search", "language": "en", "category": "search"}
+{"example": "points", "intent": "search", "language": "en", "category": "search"}
+{"example": "rewards", "intent": "search", "language": "en", "category": "search"}
+{"example": "gift card", "intent": "search", "language": "en", "category": "search"}
+{"example": "mobile recharge", "intent": "search", "language": "en", "category": "search"}
+{"example": "dollar", "intent": "search", "language": "en", "category": "search"}
+{"example": "euro", "intent": "search", "language": "en", "category": "search"}
+{"example": "exchange", "intent": "search", "language": "en", "category": "search"}
+{"example": "remittance", "intent": "search", "language": "en", "category": "search"}
+{"example": "global account", "intent": "search", "language": "en", "category": "search"}
+{"example": "international account", "intent": "search", "language": "en", "category": "search"}
+{"example": "iphone", "intent": "search", "language": "en", "category": "search"}
+{"example": "smartphone", "intent": "search", "language": "en", "category": "search"}
+{"example": "cellphone", "intent": "search", "language": "en", "category": "search"}
+{"example": "motorola", "intent": "search", "language": "en", "category": "search"}
+{"example": "xiaomi", "intent": "search", "language": "en", "category": "search"}
+{"example": "smartwatch", "intent": "search", "language": "en", "category": "search"}
+{"example": "notebook", "intent": "search", "language": "en", "category": "search"}
+{"example": "laptop", "intent": "search", "language": "en", "category": "search"}
+{"example": "macbook", "intent": "search", "language": "en", "category": "search"}
+{"example": "computer", "intent": "search", "language": "en", "category": "search"}
+{"example": "pc", "intent": "search", "language": "en", "category": "search"}
+{"example": "monitor", "intent": "search", "language": "en", "category": "search"}
+{"example": "keyboard", "intent": "search", "language": "en", "category": "search"}
+{"example": "mouse", "intent": "search", "language": "en", "category": "search"}
+{"example": "printer", "intent": "search", "language": "en", "category": "search"}
+{"example": "router", "intent": "search", "language": "en", "category": "search"}
+{"example": "tv", "intent": "search", "language": "en", "category": "search"}
+{"example": "television", "intent": "search", "language": "en", "category": "search"}
+{"example": "4k tv", "intent": "search", "language": "en", "category": "search"}
+{"example": "oled tv", "intent": "search", "language": "en", "category": "search"}
+{"example": "soundbar", "intent": "search", "language": "en", "category": "search"}
+{"example": "home theater", "intent": "search", "language": "en", "category": "search"}
+{"example": "playstation", "intent": "search", "language": "en", "category": "search"}
+{"example": "ps4", "intent": "search", "language": "en", "category": "search"}
+{"example": "ps5", "intent": "search", "language": "en", "category": "search"}
+{"example": "xbox", "intent": "search", "language": "en", "category": "search"}
+{"example": "nintendo switch", "intent": "search", "language": "en", "category": "search"}
+{"example": "console", "intent": "search", "language": "en", "category": "search"}
+{"example": "videogame", "intent": "search", "language": "en", "category": "search"}
+{"example": "controller", "intent": "search", "language": "en", "category": "search"}
+{"example": "games", "intent": "search", "language": "en", "category": "search"}
+{"example": "refrigerator", "intent": "search", "language": "en", "category": "search"}
+{"example": "fridge", "intent": "search", "language": "en", "category": "search"}
+{"example": "freezer", "intent": "search", "language": "en", "category": "search"}
+{"example": "stove", "intent": "search", "language": "en", "category": "search"}
+{"example": "oven", "intent": "search", "language": "en", "category": "search"}
+{"example": "microwave", "intent": "search", "language": "en", "category": "search"}
+{"example": "microwave oven", "intent": "search", "language": "en", "category": "search"}
+{"example": "washing machine", "intent": "search", "language": "en", "category": "search"}
+{"example": "dryer", "intent": "search", "language": "en", "category": "search"}
+{"example": "dishwasher", "intent": "search", "language": "en", "category": "search"}
+{"example": "air conditioner", "intent": "search", "language": "en", "category": "search"}
+{"example": "fan", "intent": "search", "language": "en", "category": "search"}
+{"example": "heater", "intent": "search", "language": "en", "category": "search"}
+{"example": "blender", "intent": "search", "language": "en", "category": "search"}
+{"example": "mixer", "intent": "search", "language": "en", "category": "search"}
+{"example": "air fryer", "intent": "search", "language": "en", "category": "search"}
+{"example": "coffee maker", "intent": "search", "language": "en", "category": "search"}
+{"example": "nespresso", "intent": "search", "language": "en", "category": "search"}
+{"example": "vacuum cleaner", "intent": "search", "language": "en", "category": "search"}
+{"example": "robot vacuum", "intent": "search", "language": "en", "category": "search"}
+{"example": "iron", "intent": "search", "language": "en", "category": "search"}
+{"example": "hair dryer", "intent": "search", "language": "en", "category": "search"}
+{"example": "headphones", "intent": "search", "language": "en", "category": "search"}
+{"example": "earphones", "intent": "search", "language": "en", "category": "search"}
+{"example": "headset", "intent": "search", "language": "en", "category": "search"}
+{"example": "airpods", "intent": "search", "language": "en", "category": "search"}
+{"example": "galaxy buds", "intent": "search", "language": "en", "category": "search"}
+{"example": "speaker", "intent": "search", "language": "en", "category": "search"}
+{"example": "bluetooth", "intent": "search", "language": "en", "category": "search"}
+{"example": "kindle", "intent": "search", "language": "en", "category": "search"}
+{"example": "tablet", "intent": "search", "language": "en", "category": "search"}
+{"example": "ipad", "intent": "search", "language": "en", "category": "search"}
+{"example": "e-reader", "intent": "search", "language": "en", "category": "search"}
+{"example": "sneakers", "intent": "search", "language": "en", "category": "search"}
+{"example": "shoes", "intent": "search", "language": "en", "category": "search"}
+{"example": "clothes", "intent": "search", "language": "en", "category": "search"}
+{"example": "shirt", "intent": "search", "language": "en", "category": "search"}
+{"example": "t-shirt", "intent": "search", "language": "en", "category": "search"}
+{"example": "pants", "intent": "search", "language": "en", "category": "search"}
+{"example": "jacket", "intent": "search", "language": "en", "category": "search"}
+{"example": "coat", "intent": "search", "language": "en", "category": "search"}
+{"example": "backpack", "intent": "search", "language": "en", "category": "search"}
+{"example": "bag", "intent": "search", "language": "en", "category": "search"}
+{"example": "perfume", "intent": "search", "language": "en", "category": "search"}
+{"example": "makeup", "intent": "search", "language": "en", "category": "search"}
+{"example": "cosmetics", "intent": "search", "language": "en", "category": "search"}
+{"example": "beauty", "intent": "search", "language": "en", "category": "search"}
