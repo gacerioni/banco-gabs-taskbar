@@ -140,6 +140,9 @@ def hybrid_search(
     all_results = []
     total_redis_time = 0.0
 
+    # Phase 1: Run FT.HYBRID on all indexes and collect doc keys + scores
+    doc_keys_scores = []  # list of (doc_key, score)
+
     redis_start = time.time()
     for idx_name in indexes:
         try:
@@ -189,18 +192,32 @@ def hybrid_search(
                                         score = 0.0
 
                         if doc_key:
-                            try:
-                                doc = redis_client.json().get(doc_key)
-                                if doc:
-                                    doc.pop('embedding', None)
-                                    doc['_hybrid_score'] = score
-                                    doc['match_type'] = 'hybrid_rrf'
-                                    all_results.append(doc)
-                            except Exception as e:
-                                print(f"Error getting {doc_key}: {e}")
+                            doc_keys_scores.append((doc_key, score))
 
         except Exception as e:
             print(f"FT.HYBRID error on {idx_name}: {e}")
+
+    # Phase 2: Batch-fetch all documents using a Redis pipeline (1 round-trip
+    # instead of N individual JSON.GET calls — critical for Redis Cloud latency)
+    if doc_keys_scores:
+        pipe = redis_client.pipeline(transaction=False)
+        for doc_key, _ in doc_keys_scores:
+            pipe.json().get(doc_key)
+
+        fetch_start = time.time()
+        try:
+            docs = pipe.execute(raise_on_error=False)
+        except Exception as e:
+            print(f"Pipeline fetch error: {e}")
+            docs = []
+        total_redis_time += (time.time() - fetch_start) * 1000
+
+        for (doc_key, score), doc in zip(doc_keys_scores, docs):
+            if doc and isinstance(doc, dict):
+                doc.pop('embedding', None)
+                doc['_hybrid_score'] = score
+                doc['match_type'] = 'hybrid_rrf'
+                all_results.append(doc)
 
     search_metadata["redis_search_ms"] = round((time.time() - redis_start) * 1000, 2)
     search_metadata["total_redis_ms"] = round(total_redis_time, 2)

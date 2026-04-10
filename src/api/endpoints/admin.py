@@ -485,21 +485,20 @@ async def delete_router_example(example_id: str) -> Dict[str, Any]:
 
     print(f"🗑️  Deleted from file: {example_text} ({language}/{intent})")
 
-    # Remove from live router by forcing reload
+    # Force-rebuild the router index so the deleted example is removed immediately
+    # (overwrite=True re-embeds all remaining examples from the updated JSONL file)
     try:
-        from src.routers.intent_router import _semantic_routers
+        from src.routers.intent_router import get_semantic_router
 
-        # Force reload by deleting the cached router
-        if language in _semantic_routers:
-            del _semantic_routers[language]
-            print(f"🔄 Cleared cached router for '{language}' - will reload on next request")
+        get_semantic_router(language, overwrite=True)
+        print(f"🔄 Router for '{language}' rebuilt with updated examples")
 
         return {
-            "message": f"Example deleted successfully (will reload on next query)",
+            "message": f"Example deleted and router rebuilt immediately",
             "example": example_text,
             "language": language,
             "intent": intent,
-            "note": f"Router will reload with updated examples on next {language.upper()} query"
+            "note": f"Router for {language.upper()} is already using updated examples"
         }
 
     except Exception as e:

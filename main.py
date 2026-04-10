@@ -23,6 +23,9 @@ from src.data.redis_indexes import indexes_exist_all, create_all_indexes
 from src.data.seed.seeder import seed_all
 from src.data.synonyms import apply_synonyms_to_all
 from src.search.autocomplete import setup_autocomplete
+from src.search.vectorizer import get_search_vectorizer
+from src.routers.language_detector import get_language_detector
+from src.routers.intent_router import get_semantic_router
 from src.api import health_router, seed_router, search_router, autocomplete_router, feedback_router
 from src.api.endpoints.admin import router as admin_router
 
@@ -56,8 +59,10 @@ async def lifespan(app: FastAPI):
         raise
     
     # Auto-seed if indexes don't exist
+    need_overwrite = False
     if not indexes_exist_all(redis_client):
         print("\n🌱 Indexes not found - creating and seeding...")
+        need_overwrite = True  # New indexes = need to embed router examples
         try:
             create_all_indexes(redis_client)
             seed_all(redis_client)
@@ -67,9 +72,31 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             print(f"❌ Auto-seed failed: {e}")
             # Don't raise - let app start anyway
-    
+
+    # ====================================================================
+    # PRE-WARM ALL MODELS (eliminates cold-start latency on first query)
+    # ====================================================================
+    import time as _time
+    warm_start = _time.time()
+    print("\n🔥 Pre-warming models...")
+
+    # 1. Search vectorizer (MiniLM ~120MB, loads in ~2s)
+    get_search_vectorizer()
+
+    # 2. Language detector (xlm-roberta ~1.1GB, loads in ~5s)
+    get_language_detector()
+
+    # 3. Semantic routers for all supported languages
+    #    overwrite=True only after fresh seed (re-embeds 800+ examples)
+    #    overwrite=False on normal restart (reuses existing Redis index — instant)
+    for lang in ['pt', 'en', 'es']:
+        get_semantic_router(lang, overwrite=need_overwrite)
+
+    warm_elapsed = _time.time() - warm_start
+    print(f"✅ All models pre-warmed in {warm_elapsed:.1f}s")
+
     print("=" * 80)
-    print("🚀 Server ready!")
+    print("🚀 Server ready! First search will be fast.")
     print("=" * 80)
     
     yield
