@@ -9,6 +9,7 @@ import json
 
 from ...data import get_redis_client
 from ...search.vectorizer import embed_text
+from ...search.query_cache import invalidate_search_cache
 
 router = APIRouter(prefix="/admin/api", tags=["admin"])
 
@@ -83,6 +84,7 @@ async def create_route(route: Dict[str, Any]) -> Dict[str, Any]:
     key = f"route:{route['id']}"
     redis_client.json().set(key, '$', route)
 
+    invalidate_search_cache(redis_client)
     print(f"✅ Created route: {route['id']}")
 
     route.pop('embedding', None)
@@ -113,6 +115,7 @@ async def update_route(route_id: str, route: Dict[str, Any]) -> Dict[str, Any]:
     # Update in Redis
     redis_client.json().set(key, '$', route)
 
+    invalidate_search_cache(redis_client)
     print(f"✅ Updated route: {route_id}")
 
     route.pop('embedding', None)
@@ -133,6 +136,7 @@ async def delete_route(route_id: str) -> Dict[str, Any]:
     # Delete
     redis_client.delete(key)
 
+    invalidate_search_cache(redis_client)
     print(f"🗑️  Deleted route: {route_id}")
 
     return {"message": f"Route {route_id} deleted successfully"}
@@ -157,6 +161,7 @@ async def reprocess_route_embedding(route_id: str) -> Dict[str, Any]:
     # Update in Redis
     redis_client.json().set(key, '$', doc)
 
+    invalidate_search_cache(redis_client)
     print(f"Reprocessed embedding for route: {route_id}")
 
     return {"message": f"Embedding reprocessed for route {route_id}"}
@@ -214,6 +219,8 @@ async def create_product(product: Dict[str, Any]) -> Dict[str, Any]:
 
     key = f"product:{product['id']}"
     redis_client.json().set(key, '$', product)
+
+    invalidate_search_cache(redis_client)
     print(f"✅ Created product: {product['id']}")
 
     product.pop('embedding', None)
@@ -237,6 +244,8 @@ async def update_product(product_id: str, product: Dict[str, Any]) -> Dict[str, 
     product['embedding'] = embedding
 
     redis_client.json().set(key, '$', product)
+
+    invalidate_search_cache(redis_client)
     print(f"✅ Updated product: {product_id}")
 
     product.pop('embedding', None)
@@ -251,6 +260,8 @@ async def delete_product(product_id: str) -> Dict[str, Any]:
     if not redis_client.exists(key):
         raise HTTPException(status_code=404, detail=f"Product {product_id} not found")
     redis_client.delete(key)
+
+    invalidate_search_cache(redis_client)
     print(f"🗑️  Deleted product: {product_id}")
     return {"message": f"Product {product_id} deleted successfully"}
 
@@ -306,6 +317,8 @@ async def create_sku(sku: Dict[str, Any]) -> Dict[str, Any]:
 
     key = f"sku:{sku['id']}"
     redis_client.json().set(key, '$', sku)
+
+    invalidate_search_cache(redis_client)
     print(f"✅ Created SKU: {sku['id']}")
 
     sku.pop('embedding', None)
@@ -329,6 +342,8 @@ async def update_sku(sku_id: str, sku: Dict[str, Any]) -> Dict[str, Any]:
     sku['embedding'] = embedding
 
     redis_client.json().set(key, '$', sku)
+
+    invalidate_search_cache(redis_client)
     print(f"✅ Updated SKU: {sku_id}")
 
     sku.pop('embedding', None)
@@ -343,6 +358,8 @@ async def delete_sku(sku_id: str) -> Dict[str, Any]:
     if not redis_client.exists(key):
         raise HTTPException(status_code=404, detail=f"SKU {sku_id} not found")
     redis_client.delete(key)
+
+    invalidate_search_cache(redis_client)
     print(f"Deleted SKU: {sku_id}")
 
     return {"message": f"SKU {sku_id} deleted successfully"}
