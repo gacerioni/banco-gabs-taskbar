@@ -64,6 +64,26 @@ def get_cached_results(
     return None
 
 
+def invalidate_search_cache(redis_client: redis.Redis) -> int:
+    """
+    Invalidate all cached search results.
+    Called after admin creates/updates/deletes any searchable item
+    so users see immediate results.
+
+    Returns:
+        Number of cache keys deleted
+    """
+    try:
+        keys = redis_client.keys("cache:search:*")
+        if keys:
+            redis_client.delete(*keys)
+            print(f"🗑️  Invalidated {len(keys)} cached search results")
+            return len(keys)
+    except Exception as e:
+        print(f"Cache invalidation error: {e}")
+    return 0
+
+
 def cache_results(
     redis_client: redis.Redis,
     query: str,
