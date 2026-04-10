@@ -26,21 +26,22 @@ class Config:
     )
     
     # ============================================================================
-    # EMBEDDING CONFIGURATION - Qwen3 for EVERYTHING!
+    # EMBEDDING CONFIGURATION
     # ============================================================================
 
-    # Unified model: Qwen3 for routing AND search (memory efficient!)
-    # Benefits:
-    # - 1 model loaded (saves ~500MB vs separate router model)
-    # - Best quality for both routing and search (+30% accuracy)
-    # - 4096 dimensions (state-of-the-art)
-    # - Magalu uses this too!
+    # Default: MiniLM (fast, 384 dims, ~120MB, loads in ~2s) - great for demos
+    # Production: set EMBEDDING_MODEL=Alibaba-NLP/gte-Qwen2-1.5B-instruct
+    #             and EMBEDDING_DIM=4096 for best quality (+30% accuracy)
+    #
+    # Switch via .env:
+    #   EMBEDDING_MODEL=Alibaba-NLP/gte-Qwen2-1.5B-instruct
+    #   EMBEDDING_DIM=4096
 
     EMBEDDING_MODEL: str = os.getenv(
         "EMBEDDING_MODEL",
-        "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
-    EMBEDDING_DIM: int = int(os.getenv("EMBEDDING_DIM", "4096"))
+    EMBEDDING_DIM: int = int(os.getenv("EMBEDDING_DIM", "384"))
 
     # Router uses same model as search (for efficiency)
     ROUTER_MODEL: str = EMBEDDING_MODEL
@@ -64,13 +65,6 @@ class Config:
     # See: src/data/models/route_schema.py, product_schema.py, sku_schema.py
 
     # ============================================================================
-    # OPENAI CONFIGURATION (Optional - for chat)
-    # ============================================================================
-
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-    
-    # ============================================================================
     # SEARCH CONFIGURATION
     # ============================================================================
     
@@ -89,6 +83,13 @@ class Config:
 
     OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY", None)
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+    # ============================================================================
+    # QUERY CACHE CONFIGURATION
+    # ============================================================================
+
+    CACHE_TTL: int = int(os.getenv("CACHE_TTL", "300"))  # 5 minutes default
+    CACHE_ENABLED: bool = os.getenv("CACHE_ENABLED", "True").lower() in ("true", "1", "yes")
 
     # ============================================================================
     # APPLICATION CONFIGURATION

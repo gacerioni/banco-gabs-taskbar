@@ -2,10 +2,8 @@
 Intent Router Module
 Routes queries to 'search' or 'chat' intent based on semantic similarity
 
-NOW USING QWEN3 FOR EVERYTHING!
-- Same model for routing and search (memory efficient)
-- Much better quality (+30% accuracy)
-- Unified embeddings (4096 dims)
+Uses the same embedding model as search (shared vectorizer, memory efficient).
+Model is configurable via EMBEDDING_MODEL env var (see config.py).
 """
 
 from typing import Tuple, Dict, Optional
@@ -13,7 +11,6 @@ import os
 
 from redisvl.extensions.router import Route, SemanticRouter, RoutingConfig
 from redisvl.extensions.router.semantic import DistanceAggregationMethod
-from redisvl.utils.vectorize import HFTextVectorizer
 
 from .language_detector import detect_language
 from .route_examples import get_route_examples
@@ -24,39 +21,7 @@ from ..search.vectorizer import get_search_vectorizer  # Use SAME vectorizer as 
 # GLOBAL STATE
 # ============================================================================
 
-_router_vectorizer: Optional[HFTextVectorizer] = None
 _semantic_routers: Dict[str, SemanticRouter] = {}
-
-
-# ============================================================================
-# VECTORIZER (QWEN3 - SHARED WITH SEARCH)
-# ============================================================================
-
-def get_router_vectorizer() -> HFTextVectorizer:
-    """
-    Get or create vectorizer for semantic routing.
-    NOW USES QWEN3 (same as search)!
-
-    Benefits:
-    - Much better quality (+30% accuracy vs MiniLM)
-    - Shares model with search (no extra memory)
-    - 4096 dimensions (vs 384)
-    - State-of-the-art multilingual
-
-    Returns:
-        HFTextVectorizer instance
-    """
-    global _router_vectorizer
-
-    if _router_vectorizer is None:
-        print("🤖 Loading router vectorizer: Qwen3 (gte-Qwen2-1.5B-instruct)")
-        print("   🔥 Using same model as search for efficiency!")
-        _router_vectorizer = HFTextVectorizer(
-            model="Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-        )
-        print("✅ Router vectorizer loaded (4096 dims - Qwen3)")
-
-    return _router_vectorizer
 
 
 # ============================================================================
