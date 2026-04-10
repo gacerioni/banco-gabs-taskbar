@@ -28,28 +28,31 @@ _semantic_routers: Dict[str, SemanticRouter] = {}
 # SEMANTIC ROUTERS (per language)
 # ============================================================================
 
-def get_semantic_router(language: str) -> SemanticRouter:
+def get_semantic_router(language: str, overwrite: bool = False) -> SemanticRouter:
     """
     Get or create semantic router for a specific language.
     
     Args:
         language: Language code ('pt', 'en', 'es')
+        overwrite: If True, force re-creation of index and re-embedding of all
+                   references. Only use after seeding/reloading examples.
+                   Default False = reuse existing Redis index (fast!).
     
     Returns:
         SemanticRouter instance for that language
     """
     global _semantic_routers
     
-    if language not in _semantic_routers:
+    if language not in _semantic_routers or overwrite:
         from ..core.config import config  # Import here to avoid circular
 
-        print(f"🔀 Initializing semantic router for language: {language}")
+        print(f"Initializing semantic router for language: {language} (overwrite={overwrite})")
 
         # Get route examples
         all_examples = get_route_examples()
 
         if language not in all_examples:
-            print(f"⚠️  Language '{language}' not configured, falling back to 'en'")
+            print(f"Language '{language}' not configured, falling back to 'en'")
             language = 'en'
 
         lang_examples = all_examples[language]
@@ -71,17 +74,20 @@ def get_semantic_router(language: str) -> SemanticRouter:
         redis_url = config.REDIS_URL
 
         # Create router using SAME vectorizer as search (no duplication!)
+        # overwrite=False by default: reuses existing Redis index if present.
+        # This avoids re-embedding 800+ examples on every router init (~seconds).
+        # Only set overwrite=True after seeding or editing router examples.
         router = SemanticRouter(
             name=f"intent_router_{language}",
             routes=[search_route, chat_route],
             routing_config=RoutingConfig(aggregation_method=DistanceAggregationMethod.min),
             vectorizer=get_search_vectorizer(),  # Use search vectorizer (already loaded!)
             redis_url=redis_url,
-            overwrite=True  # FORCES RECREATION OF INDEX AND REFERENCES!
+            overwrite=overwrite
         )
 
         _semantic_routers[language] = router
-        print(f"✅ Semantic router for '{language}' initialized")
+        print(f"Semantic router for '{language}' initialized")
     
     return _semantic_routers[language]
 
@@ -90,16 +96,18 @@ def force_reload_routers():
     """
     Force reload all semantic routers from disk.
     Called by the /seed endpoint to refresh routes.
+    Uses overwrite=True to re-embed all examples.
     """
     global _semantic_routers
-    print("🔄 Forcing reload of all semantic routers...")
+    print("Forcing reload of all semantic routers...")
 
     # Clear the in-memory cache
     _semantic_routers.clear()
 
-    # Re-initialize for 'pt' (will trigger overwrite=True)
-    get_semantic_router('pt')
-    print("✅ Semantic routers reloaded successfully!")
+    # Re-initialize all languages with overwrite=True (re-embeds all examples)
+    for lang in ['pt', 'en', 'es']:
+        get_semantic_router(lang, overwrite=True)
+    print("Semantic routers reloaded successfully!")
 
 
 # ============================================================================
