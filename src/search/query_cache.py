@@ -73,6 +73,9 @@ def invalidate_search_cache(redis_client: redis.Redis) -> int:
     Returns:
         Number of cache keys deleted
     """
+    if not config.CACHE_ENABLED:
+        return 0
+
     try:
         keys = redis_client.keys("cache:search:*")
         if keys:
