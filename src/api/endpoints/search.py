@@ -130,7 +130,7 @@ async def unified_search(
         if cached:
             results, metadata = cached
             latency = (time.time() - start) * 1000
-            return {
+            response = {
                 "tracking_id": tracking_id,
                 "latency_ms": round(latency, 2),
                 "redis_time_ms": metadata.get("total_redis_ms", 0),
@@ -142,6 +142,10 @@ async def unified_search(
                 "total": len(results),
                 "results": results
             }
+            if metadata.get("corrected_query"):
+                response["did_you_mean"] = metadata["corrected_query"]
+                response["spellcheck_suggestions"] = metadata["spellcheck_suggestions"]
+            return response
 
         # Search intent - hybrid search
         results, metadata = hybrid_search(
