@@ -11,7 +11,7 @@ import re
 from typing import List, Dict, Any, Tuple
 
 from .vectorizer import embed_text
-from .spellcheck import spellcheck_query, get_corrected_query
+from .spellcheck import spellcheck_query
 from ..core.config import config
 
 
@@ -19,7 +19,7 @@ from ..core.config import config
 # MATCH EXPLANATION
 # ============================================================================
 
-def _build_match_explanation(doc: Dict[str, Any], query: str, boost_type: str = None) -> str:
+def _build_match_explanation(doc: Dict[str, Any], query: str, boost_type: str = None, original_score: float = None) -> str:
     """
     Build a human-readable explanation of why this result matched.
 
@@ -27,6 +27,7 @@ def _build_match_explanation(doc: Dict[str, Any], query: str, boost_type: str = 
         doc: The result document
         query: Original search query
         boost_type: 'exact', 'partial', or None
+        original_score: The original RRF score before any boost multiplier
 
     Returns:
         Explanation string
@@ -56,8 +57,8 @@ def _build_match_explanation(doc: Dict[str, Any], query: str, boost_type: str = 
     elif boost_type == 'partial':
         parts.append("Partial title match (3x boost)")
 
-    # Always mention hybrid scoring
-    score = doc.get('_hybrid_score', 0)
+    # Use original (pre-boost) RRF score if provided, otherwise read from doc
+    score = original_score if original_score is not None else doc.get('_hybrid_score', 0)
     parts.append(f"RRF score: {score:.4f}")
 
     # Doc type
@@ -208,13 +209,17 @@ def hybrid_search(
     if not all_results:
         spell_start = time.time()
         corrections = spellcheck_query(redis_client, query, indexes)
-        search_metadata["spellcheck_ms"] = round((time.time() - spell_start) * 1000, 2)
 
         if corrections:
             search_metadata["spellcheck_suggestions"] = corrections
-            corrected = get_corrected_query(redis_client, query, indexes)
+            # Build corrected query from already-fetched corrections (avoids double Redis call)
+            corrected = query
+            for correction in corrections:
+                corrected = corrected.replace(correction['original'], correction['suggestion'])
             search_metadata["corrected_query"] = corrected
             print(f"Spellcheck: '{query}' -> '{corrected}'")
+
+        search_metadata["spellcheck_ms"] = round((time.time() - spell_start) * 1000, 2)
 
     # POST-PROCESSING: Apply relevance boost for exact/partial matches
     post_start = time.time()
@@ -238,8 +243,8 @@ def hybrid_search(
             boost_type = 'partial'
             print(f"PARTIAL MATCH BOOST: '{doc.get('title')}' {original_score:.4f} -> {doc['_hybrid_score']:.4f}")
 
-        # Add match explanation
-        doc['match_explanation'] = _build_match_explanation(doc, query, boost_type)
+        # Add match explanation (pass original_score so RRF score is pre-boost)
+        doc['match_explanation'] = _build_match_explanation(doc, query, boost_type, original_score)
 
     # Sort all results by boosted hybrid score and return top N
     all_results.sort(key=lambda x: x.get('_hybrid_score', 0), reverse=True)
