@@ -149,6 +149,18 @@ async def reprocess_route_embedding(route_id: str) -> Dict[str, Any]:
     if not doc:
         raise HTTPException(status_code=404, detail=f"Route {route_id} not found")
 
+    # Regenerate embedding from document fields
+    text_to_embed = f"{doc.get('title', '')} {doc.get('subtitle', '')} {doc.get('description', '')} {doc.get('keywords', '')} {doc.get('aliases', '')}"
+    embedding = embed_text(text_to_embed)
+    doc['embedding'] = embedding
+
+    # Update in Redis
+    redis_client.json().set(key, '$', doc)
+
+    print(f"Reprocessed embedding for route: {route_id}")
+
+    return {"message": f"Embedding reprocessed for route {route_id}"}
+
 
 
 # ============================================================================
@@ -331,7 +343,9 @@ async def delete_sku(sku_id: str) -> Dict[str, Any]:
     if not redis_client.exists(key):
         raise HTTPException(status_code=404, detail=f"SKU {sku_id} not found")
     redis_client.delete(key)
+    print(f"Deleted SKU: {sku_id}")
 
+    return {"message": f"SKU {sku_id} deleted successfully"}
 
 
 # ============================================================================
@@ -504,11 +518,4 @@ async def retrain_router() -> Dict[str, Any]:
         "message": "Router retraining requires server restart",
         "instruction": "Please restart the server to reload router examples"
     }
-
-    # Update
-    redis_client.json().set(key, '$', doc)
-
-    print(f"🔄 Reprocessed embedding for route: {route_id}")
-
-    return {"message": f"Embedding reprocessed for route {route_id}"}
 

@@ -1,6 +1,6 @@
 """
 Search Endpoints
-Unified search with semantic routing
+Unified search with semantic routing, latency breakdown, query caching
 """
 
 from fastapi import APIRouter, Query
@@ -10,6 +10,7 @@ import uuid
 
 from ...data import get_redis_client
 from ...search.hybrid_search import hybrid_search
+from ...search.query_cache import get_cached_results, cache_results
 from ...routers import route_query
 from ...chat import handle_chat_query
 from ...core.models import UnifiedSearchResponse
@@ -27,12 +28,27 @@ async def legacy_search(
 ) -> Dict[str, Any]:
     """
     Legacy search endpoint (backward compatible).
-    Always performs hybrid search.
+    Always performs hybrid search with caching and latency breakdown.
     """
     redis_client = get_redis_client()
     start = time.time()
 
-    results, redis_time_ms = hybrid_search(
+    # Check cache first
+    cached = get_cached_results(redis_client, q, lang, limit, 0.7, 0.3, 10)
+    if cached:
+        results, metadata = cached
+        latency = (time.time() - start) * 1000
+        return {
+            "tracking_id": str(uuid.uuid4()),
+            "latency_ms": round(latency, 2),
+            "redis_time_ms": metadata.get("total_redis_ms", 0),
+            "breakdown": metadata,
+            "query": q,
+            "total": len(results),
+            "results": results
+        }
+
+    results, metadata = hybrid_search(
         redis_client=redis_client,
         query=q,
         lang=lang,
@@ -43,12 +59,16 @@ async def legacy_search(
         rrf_k=10
     )
 
+    # Cache results
+    cache_results(redis_client, q, lang, limit, 0.7, 0.3, 10, results, metadata)
+
     latency = (time.time() - start) * 1000
 
     return {
         "tracking_id": str(uuid.uuid4()),
         "latency_ms": round(latency, 2),
-        "redis_time_ms": redis_time_ms,
+        "redis_time_ms": metadata.get("total_redis_ms", 0),
+        "breakdown": metadata,
         "query": q,
         "total": len(results),
         "results": results
@@ -68,8 +88,10 @@ async def unified_search(
     Unified search with semantic routing.
     
     Routes to:
-    - SEARCH intent → Hybrid search (Redis 8.6 native)
+    - SEARCH intent → Hybrid search (Redis 8.6 native) with caching
     - CHAT intent → Conversational AI (mock or OpenAI)
+    
+    Response includes latency breakdown and match explanations.
     """
     redis_client = get_redis_client()
     start = time.time()
@@ -78,7 +100,7 @@ async def unified_search(
     # Route query (language detection + intent routing)
     language, intent, confidence = route_query(q)
     
-    print(f"🔀 Routing: '{q}' → {language.upper()} / {intent.upper()} ({confidence:.2%})")
+    print(f"Routing: '{q}' -> {language.upper()} / {intent.upper()} ({confidence:.2%})")
     
     if intent == "chat":
         # Chat intent - conversational AI
@@ -103,24 +125,50 @@ async def unified_search(
         }
     
     else:
+        # Search intent - check cache first
+        cached = get_cached_results(redis_client, q, language, limit, fts_weight, vss_weight, rrf_k)
+        if cached:
+            results, metadata = cached
+            latency = (time.time() - start) * 1000
+            response = {
+                "tracking_id": tracking_id,
+                "latency_ms": round(latency, 2),
+                "redis_time_ms": metadata.get("total_redis_ms", 0),
+                "breakdown": metadata,
+                "query": q,
+                "language": language,
+                "intent": "search",
+                "confidence": confidence,
+                "total": len(results),
+                "results": results
+            }
+            if metadata.get("corrected_query"):
+                response["did_you_mean"] = metadata["corrected_query"]
+                response["spellcheck_suggestions"] = metadata["spellcheck_suggestions"]
+            return response
+
         # Search intent - hybrid search
-        results, redis_time_ms = hybrid_search(
+        results, metadata = hybrid_search(
             redis_client=redis_client,
             query=q,
             lang=language,
-            country="BR",  # TODO: detect from language or config
+            country="BR",
             limit=limit,
             fts_weight=fts_weight,
             vss_weight=vss_weight,
             rrf_k=rrf_k
         )
 
+        # Cache results
+        cache_results(redis_client, q, language, limit, fts_weight, vss_weight, rrf_k, results, metadata)
+
         latency = (time.time() - start) * 1000
 
-        return {
+        response = {
             "tracking_id": tracking_id,
             "latency_ms": round(latency, 2),
-            "redis_time_ms": redis_time_ms,
+            "redis_time_ms": metadata.get("total_redis_ms", 0),
+            "breakdown": metadata,
             "query": q,
             "language": language,
             "intent": "search",
@@ -128,4 +176,11 @@ async def unified_search(
             "total": len(results),
             "results": results
         }
+
+        # Include spellcheck info if available
+        if metadata.get("corrected_query"):
+            response["did_you_mean"] = metadata["corrected_query"]
+            response["spellcheck_suggestions"] = metadata["spellcheck_suggestions"]
+
+        return response
 
