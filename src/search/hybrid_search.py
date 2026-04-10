@@ -205,7 +205,11 @@ def hybrid_search(
             pipe.json().get(doc_key)
 
         fetch_start = time.time()
-        docs = pipe.execute()
+        try:
+            docs = pipe.execute(raise_on_error=False)
+        except Exception as e:
+            print(f"Pipeline fetch error: {e}")
+            docs = []
         total_redis_time += (time.time() - fetch_start) * 1000
 
         for (doc_key, score), doc in zip(doc_keys_scores, docs):
