@@ -1,105 +1,110 @@
+#!/usr/bin/env python3
 """
-Test script to verify semantic router learns from JSONL data files
+Test Semantic Router - Stack C Implementation
+Tests language detection + intent routing
 """
 
-import json
-from pathlib import Path
+import sys
+from semantic_router import route_query, print_routing_info
 
-def extract_references_from_file(filename: str):
-    """Extract semantic references from JSONL file"""
-    references = []
-    filepath = Path(__file__).parent / filename
+# ============================================================================
+# TEST CASES
+# ============================================================================
+
+test_cases = [
+    # Portuguese - Search intent
+    ("pix", "pt", "search"),
+    ("boleto", "pt", "search"),
+    ("investimentos", "pt", "search"),
+    ("comprar iphone", "pt", "search"),
+    ("quero um notebook", "pt", "search"),
     
-    if not filepath.exists():
-        print(f"❌ File not found: {filename}")
-        return references
+    # Portuguese - Chat intent
+    ("como faço pra investir?", "pt", "chat"),
+    ("como funciona o pix?", "pt", "chat"),
+    ("preciso de ajuda", "pt", "chat"),
+    ("me explica o cashback", "pt", "chat"),
+    ("qual a diferença entre CDB e tesouro?", "pt", "chat"),
     
-    with open(filepath, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
+    # English - Search intent
+    ("pix", "en", "search"),
+    ("investments", "en", "search"),
+    ("buy iphone", "en", "search"),
+    
+    # English - Chat intent
+    ("how do I invest?", "en", "chat"),
+    ("I need help", "en", "chat"),
+    ("what is cashback?", "en", "chat"),
+    
+    # Spanish - Search intent
+    ("pix", "es", "search"),
+    ("inversiones", "es", "search"),
+    
+    # Spanish - Chat intent
+    ("¿cómo puedo invertir?", "es", "chat"),
+    ("necesito ayuda", "es", "chat"),
+]
+
+
+def test_semantic_router():
+    """Test the semantic router with various queries"""
+    
+    print("=" * 80)
+    print("🧪 TESTING SEMANTIC ROUTER - Stack C")
+    print("=" * 80)
+    print()
+    
+    passed = 0
+    failed = 0
+    
+    for query, expected_lang, expected_intent in test_cases:
+        try:
+            # Route the query
+            language, intent, confidence = route_query(query)
             
-            try:
-                doc = json.loads(line)
-                
-                # Extract title
-                if 'title' in doc and doc['title']:
-                    references.append(doc['title'].lower())
-                
-                # Extract description
-                if 'description' in doc and doc['description']:
-                    references.append(doc['description'].lower())
-                
-                # Extract keywords
-                if 'keywords' in doc and isinstance(doc['keywords'], list):
-                    references.extend([kw.lower() for kw in doc['keywords'] if kw])
-                
-                # Extract aliases
-                if 'aliases' in doc and isinstance(doc['aliases'], list):
-                    references.extend([alias.lower() for alias in doc['aliases'] if alias])
-                
-                # Extract subtitle
-                if 'subtitle' in doc and doc['subtitle']:
-                    references.append(doc['subtitle'].lower())
-                    
-            except json.JSONDecodeError as e:
-                print(f"⚠️  JSON decode error: {e}")
-                continue
+            # Check results
+            lang_match = language == expected_lang
+            intent_match = intent == expected_intent
+            
+            status = "✅ PASS" if (lang_match and intent_match) else "❌ FAIL"
+            
+            if lang_match and intent_match:
+                passed += 1
+            else:
+                failed += 1
+            
+            # Print result
+            print(f"{status} | Query: '{query}'")
+            print(f"       | Expected: lang={expected_lang}, intent={expected_intent}")
+            print(f"       | Got:      lang={language}, intent={intent}, confidence={confidence:.2%}")
+            
+            if not lang_match:
+                print(f"       | ⚠️  Language mismatch!")
+            if not intent_match:
+                print(f"       | ⚠️  Intent mismatch!")
+            
+            print()
+            
+        except Exception as e:
+            print(f"❌ ERROR | Query: '{query}'")
+            print(f"         | Error: {e}")
+            print()
+            failed += 1
     
-    # Deduplicate
-    references = list(set([ref.strip() for ref in references if ref and ref.strip()]))
-    return references
+    # Summary
+    print("=" * 80)
+    print("📊 SUMMARY")
+    print("=" * 80)
+    print(f"Total tests: {len(test_cases)}")
+    print(f"✅ Passed: {passed}")
+    print(f"❌ Failed: {failed}")
+    print(f"Success rate: {passed/len(test_cases)*100:.1f}%")
+    print("=" * 80)
+    
+    return failed == 0
 
-def main():
-    print("🧪 Testing Data-Driven Semantic Router\n")
-    print("=" * 60)
-    
-    # Extract references from each file
-    route_refs = extract_references_from_file("routes.jsonl")
-    sku_refs = extract_references_from_file("skus.jsonl")
-    product_refs = extract_references_from_file("products.jsonl")
-    
-    print(f"\n📚 ROUTE REFERENCES ({len(route_refs)} total):")
-    print("-" * 60)
-    for ref in sorted(route_refs)[:20]:  # Show first 20
-        print(f"  • {ref}")
-    if len(route_refs) > 20:
-        print(f"  ... and {len(route_refs) - 20} more")
-    
-    print(f"\n📚 SKU REFERENCES ({len(sku_refs)} total):")
-    print("-" * 60)
-    for ref in sorted(sku_refs)[:20]:
-        print(f"  • {ref}")
-    if len(sku_refs) > 20:
-        print(f"  ... and {len(sku_refs) - 20} more")
-    
-    print(f"\n📚 PRODUCT REFERENCES ({len(product_refs)} total):")
-    print("-" * 60)
-    for ref in sorted(product_refs)[:20]:
-        print(f"  • {ref}")
-    if len(product_refs) > 20:
-        print(f"  ... and {len(product_refs) - 20} more")
-    
-    # Check for "robaro meu cartao" related references
-    print("\n" + "=" * 60)
-    print("🔍 CHECKING FOR 'ROBARO MEU CARTAO' SEMANTIC MATCHES:")
-    print("-" * 60)
-    
-    robbery_related = [ref for ref in route_refs if any(word in ref for word in ['roub', 'perd', 'bloq', 'cancel'])]
-    
-    if robbery_related:
-        print("✅ Found robbery/loss related references:")
-        for ref in sorted(robbery_related):
-            print(f"  • {ref}")
-        print("\n✅ Semantic router should handle 'robaro meu cartao' naturally!")
-    else:
-        print("❌ No robbery/loss references found")
-    
-    print("\n" + "=" * 60)
-    print("✅ Data-driven approach verified!")
-    print("   Just update JSONL files - no code changes needed!")
 
 if __name__ == "__main__":
-    main()
+    success = test_semantic_router()
+    sys.exit(0 if success else 1)
 

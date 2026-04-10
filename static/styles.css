@@ -557,3 +557,58 @@ body {
     }
 }
 
+
+
+/* ============================================================================
+   DEBUG PANEL
+   ============================================================================ */
+
+.debug-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.debug-header {
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.debug-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.debug-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.debug-label {
+    font-size: 12px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.debug-value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.debug-value.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 14px;
+    width: fit-content;
+}
+

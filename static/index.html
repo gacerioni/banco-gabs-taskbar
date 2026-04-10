@@ -14,7 +14,10 @@
                 <span class="logo-icon">🏦</span>
                 <h1>Banco Inter</h1>
             </div>
-            <p class="subtitle">Busca Global • Customer 360</p>
+            <p class="subtitle">
+                Busca Global • Customer 360
+                <a href="/admin" style="float: right; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 4px 12px; background: rgba(255,255,255,0.1); border-radius: 6px;">⚙️ Admin</a>
+            </p>
         </header>
 
         <!-- Search Section -->
@@ -41,6 +44,40 @@
 
             <!-- Search Info -->
             <div id="searchInfo" class="search-info hidden"></div>
+
+            <!-- Debug Panel -->
+            <div id="debugPanel" class="debug-panel hidden">
+                <div class="debug-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>🔍 Routing Debug</strong>
+                    <button id="feedbackBtn" class="btn btn-warning" style="font-size: 11px; padding: 2px 8px; cursor: pointer; border-radius: 4px; border: none; background: #fbbf24; color: #000; font-weight: bold; margin-left: auto;">👎 Rota Errada?</button>
+                </div>
+                <div class="debug-grid">
+                    <div class="debug-item">
+                        <span class="debug-label">Language:</span>
+                        <span id="debugLanguage" class="debug-value badge">-</span>
+                    </div>
+                    <div class="debug-item">
+                        <span class="debug-label">Intent:</span>
+                        <span id="debugIntent" class="debug-value badge">-</span>
+                    </div>
+                    <div class="debug-item">
+                        <span class="debug-label">Confidence:</span>
+                        <span id="debugConfidence" class="debug-value">-</span>
+                    </div>
+                    <div class="debug-item">
+                        <span class="debug-label">Server:</span>
+                        <span id="debugLatency" class="debug-value">-</span>
+                    </div>
+                    <div class="debug-item">
+                        <span class="debug-label">⚡ Redis:</span>
+                        <span id="debugRedis" class="debug-value" style="color: #fbbf24;">-</span>
+                    </div>
+                    <div class="debug-item">
+                        <span class="debug-label">Round-trip:</span>
+                        <span id="debugClient" class="debug-value">-</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Results Section -->
