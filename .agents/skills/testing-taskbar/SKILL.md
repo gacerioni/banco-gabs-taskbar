@@ -1,58 +1,58 @@
-# Testing: Banco Inter Global TaskBar
+# Testing: Banco Inter Taskbar Search
 
 ## Overview
-FastAPI app with vanilla JS frontend for banking search. Uses Redis 8.4+ FT.HYBRID for hybrid FTS+VSS search, semantic routing, autocomplete, synonyms, and spellcheck.
-
-## Prerequisites
-- Python 3.12+
-- Redis 8.4+ with FT.HYBRID support (Redis Cloud or local)
-- ~500MB disk for MiniLM model download on first run
+FastAPI app with Redis 8.4+ hybrid search (FT.HYBRID), semantic routing, autocomplete, and query caching. Frontend is vanilla JS served at `/`.
 
 ## Devin Secrets Needed
-- `REDIS_URL` — Redis Cloud connection string (e.g. `redis://default:<password>@<host>:<port>`)
+- `REDIS_URL` — Redis Cloud connection string (redis:// or rediss://). Must be Redis 8.4+ with FT.HYBRID support.
 
 ## Setup
-1. Create `.env` in repo root with `REDIS_URL=<your redis url>`
-2. Run `./run.sh` — this creates a venv, installs deps, and starts the FastAPI server at `http://localhost:8000`
-3. First run auto-seeds 115 docs (35 routes, 25 products, 55 SKUs) if indexes don't exist
-4. MiniLM model (~120MB) downloads on first embedding call, takes ~2-5s to load
-5. Language detection model (~1.1GB) downloads on first search, takes ~5s
+1. Create `.env` with `REDIS_URL=<your Redis Cloud URL>` (only required variable)
+2. Start app: `source .env && ./run.sh`
+3. Wait for pre-warming (~10s): look for `Server ready! First search will be fast.`
+4. App available at `http://localhost:8000`
 
-## Key Test Flows
+## Key Endpoints
+- `GET /api/search?q=<query>&limit=<n>` — Unified search with semantic routing
+- `GET /search?q=<query>&limit=<n>` — Legacy search (no routing)
+- `GET /autocomplete?q=<prefix>&limit=<n>` — Autocomplete suggestions
+- `GET /admin/api/routes` / `products` / `skus` — List items
+- `POST /admin/api/routes` / `products` / `skus` — Create items
+- `PUT /admin/api/routes/{id}` / `products/{id}` / `skus/{id}` — Update items
+- `DELETE /admin/api/routes/{id}` / `products/{id}` / `skus/{id}` — Delete items
+- `GET /admin/api/router-examples` — List semantic router examples
+- `POST /admin/api/router-examples` — Add router example (hot reload)
+- `DELETE /admin/api/router-examples/{id}` — Delete router example (hot reload)
 
-### 1. Exact match search
-- Search "pix" → Pix should be #1 result with exact match boost
-- Verify debug panel shows Language=PT, Intent=SEARCH
+## Testing Search Performance
+- First search after startup should be <1000ms (models pre-warmed)
+- Second identical search should be <300ms (cache hit, `breakdown.cache_hit: true`)
+- No `Initializing semantic router` logs should appear during search requests
+- All router initialization should happen at startup
 
-### 2. Semantic search
-- Search "mandar dinheiro" (send money) → Pix should appear in top results
-- This proves VSS (vector) search is working alongside FTS
+## Testing Cache Invalidation
+To verify cache invalidation works after admin writes:
+1. Search for something (e.g., `q=PlayStation`) — note `cache_hit: false`
+2. Search again — verify `cache_hit: true`
+3. Create/update/delete any item via admin API
+4. Search again — verify `cache_hit: false` (cache was invalidated)
+5. Server logs should show `Invalidated N cached search results`
 
-### 3. Chat intent detection
-- Search "como funciona o pix?" → Should detect CHAT intent
-- UI shows purple gradient card with "Resposta do Chat" header
-- Mock response shown unless OPENAI_API_KEY is configured
+## Testing Semantic Routing
+- Search queries (e.g., "Pix", "emprestimo") → intent: `search`
+- Chat queries (e.g., "como funciona o pix?") → intent: `chat`
+- Language detection: Portuguese, English, Spanish supported
+- Router hot-reload: adding/deleting router examples via admin API takes effect immediately
 
-### 4. Query caching
-- Search same term twice
-- First: `breakdown.cache_hit: false`, higher latency
-- Second: `breakdown.cache_hit: true`, much lower latency
+## Common Issues
+- If search is slow (>2s), check that models are pre-warmed at startup (look for `All models pre-warmed` log)
+- If `Initializing semantic router` appears during search, the router overwrite logic may be broken
+- The app auto-seeds Redis indexes if they don't exist on startup
+- Switching embedding models (MiniLM ↔ Qwen) requires flushing Redis or re-seeding
+- Default model is MiniLM (384 dims, ~2s load). Qwen (4096 dims) available via EMBEDDING_MODEL env var
 
-### 5. API response fields
-- `breakdown` object: `embedding_ms`, `redis_search_ms`, `post_processing_ms`, `spellcheck_ms`, `total_redis_ms`, `cache_hit`
-- Each result has `match_explanation` string (e.g. "Keyword: 'pix' | Exact title match (10x boost) | RRF score: 0.1484 | Type: route")
-- `did_you_mean` and `spellcheck_suggestions` appear when search returns 0 results
-
-## Gotchas
-- First search after startup is slow (~10-15s) because it loads language detection + semantic router models
-- Subsequent searches are fast (~100-300ms, or <10ms for cache hits)
-- If switching embedding models (MiniLM ↔ Qwen), existing Redis data must be re-seeded (dimension mismatch)
-- `run.sh` uses uvicorn with `--reload`, so code changes auto-restart the server
-- The `redis_search_ms` in breakdown measures wall-clock time including JSON.GET round-trips, while `total_redis_ms` is only FT.HYBRID command time
-- Quick access buttons in UI: Pix, Boleto, Fatura, Investir, iPhone, Notebook, Empréstimo, Seguros
-- DevTools Network tab is useful for inspecting `breakdown` and `match_explanation` fields since the frontend doesn't display them directly
-
-## Frontend
-- Vanilla JS at `static/app.js`, calls `/api/search?q=...&limit=20`
-- Debug panel ("Performance & Debug Info") shows language, intent, confidence, server/Redis latency
-- Banco Inter orange theme (#FF7A00)
+## Dataset
+- 35 routes (banking services like Pix, loans, card blocking)
+- 25 products (financial products like mortgages, insurance)
+- 55 SKUs (marketplace items like electronics, appliances)
+- 800+ semantic router examples across 3 languages (pt/en/es)
