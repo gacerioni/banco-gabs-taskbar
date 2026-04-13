@@ -1,0 +1,8 @@
+services:
+  taskbar:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=${REDIS_URL}
+    restart: unless-stopped
