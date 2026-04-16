@@ -2,7 +2,7 @@
 
 # Test script to verify seed is working correctly
 
-echo "🧪 Testing Banco Inter Taskbar Search - Seed Verification"
+echo "🧪 Testing Redis Global Search Taskbar - Seed Verification"
 echo "=========================================================="
 echo ""
 

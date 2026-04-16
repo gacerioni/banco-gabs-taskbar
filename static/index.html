@@ -1,21 +1,73 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banco Inter - Busca Global</title>
+    <title>Redis Global Search — Taskbar Demo</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+    <div class="page-with-sidebar">
+    <aside class="demo-sidebar" id="demoSidebar" aria-label="Demo observability">
+        <div class="demo-sidebar-header">
+            <span class="demo-sidebar-icon">📡</span>
+            <div>
+                <strong>Observability</strong>
+                <div class="demo-sidebar-sub">Redis · intent · tools</div>
+            </div>
+            <button type="button" class="demo-sidebar-toggle" id="demoSidebarToggle" title="Collapse panel" aria-expanded="true">⟨</button>
+        </div>
+        <div class="demo-sidebar-body" id="demoSidebarBody">
+            <section class="demo-sec">
+                <h4 class="demo-sec-title">Session (cart / STM)</h4>
+                <code class="demo-mono" id="demoSid">—</code>
+            </section>
+            <section class="demo-sec">
+                <h4 class="demo-sec-title">Last search · bar</h4>
+                <div class="demo-kv"><span>Query</span><span id="demoLastSearchQuery">—</span></div>
+                <div class="demo-kv"><span>Intent</span><span id="demoLastSearchIntent">—</span></div>
+                <div class="demo-kv"><span>Confidence</span><span id="demoLastSearchConf">—</span></div>
+                <div class="demo-kv"><span>Latency</span><span id="demoLastSearchLat">—</span></div>
+                <div class="demo-kv"><span>Redis</span><span id="demoLastSearchRedis">—</span></div>
+                <div class="demo-kv"><span>Results</span><span id="demoLastSearchTotal">—</span></div>
+                <div class="demo-kv"><span>Cache</span><span id="demoLastSearchCache">—</span></div>
+                <div class="demo-kv demo-kv-full" id="demoLastSearchRouteRow" hidden><span>Router</span><span id="demoLastSearchRoute">—</span></div>
+            </section>
+            <section class="demo-sec">
+                <h4 class="demo-sec-title">Last Concierge</h4>
+                <div class="demo-kv"><span>Provider</span><span id="demoConcProv">—</span></div>
+                <div class="demo-kv"><span>Model</span><span id="demoConcModel">—</span></div>
+                <div class="demo-kv"><span>Latency</span><span id="demoConcLat">—</span></div>
+                <div class="demo-kv"><span>Cart</span><span id="demoConcCart">—</span></div>
+                <div class="demo-sec-note" id="demoConcTraceHint">Tool trace: set <code>DEBUG=true</code> on the server to see tool calls here.</div>
+                <pre class="demo-pre" id="demoConcTrace" hidden></pre>
+            </section>
+            <section class="demo-sec">
+                <h4 class="demo-sec-title">Agent tools</h4>
+                <ul class="demo-tool-list" id="demoToolList"></ul>
+            </section>
+            <section class="demo-sec demo-sec-muted">
+                <h4 class="demo-sec-title">Redis keys (demo)</h4>
+                <ul class="demo-mini-list">
+                    <li><code>demo:cart:&lt;session_id&gt;</code> — shopping cart</li>
+                    <li><code>demo:stm:*</code> — LangChain STM</li>
+                    <li><code>cache:search:*</code> — hybrid search cache</li>
+                    <li><code>demo:concierge:faq</code> — FAQ RAG</li>
+                </ul>
+            </section>
+        </div>
+    </aside>
+
+    <div class="main-column">
     <div class="container">
         <!-- Header -->
         <header class="header">
             <div class="logo">
-                <span class="logo-icon">🏦</span>
-                <h1>Banco Inter</h1>
+                <span class="logo-icon">🔍</span>
+                <h1>Redis Global Search</h1>
             </div>
             <p class="subtitle">
-                Busca Global • Customer 360
+                Global search · Customer 360 demo
                 <a href="/admin" style="float: right; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 4px 12px; background: rgba(255,255,255,0.1); border-radius: 6px;">⚙️ Admin</a>
             </p>
         </header>
@@ -28,18 +80,23 @@
                     type="text" 
                     id="searchInput" 
                     class="search-input" 
-                    placeholder="O que você procura? (Pix, boleto, iPhone, investimentos...)"
+                    placeholder="What are you looking for? (Pix, slip, iPhone, investments…)"
                     autocomplete="off"
                 >
                 
                 <!-- Autocomplete Dropdown -->
                 <div id="autocompleteDropdown" class="autocomplete-dropdown hidden"></div>
             </div>
+            <p class="search-hint">
+                <strong>Search bar:</strong> the server <strong>detects intent</strong> — short product/banking-style terms (e.g. <em>Pix</em>, <em>iPhone</em>) run <strong>global hybrid search</strong>; conversational phrases (e.g. <em>I want to speak to a manager</em> — try Portuguese too: <em>quero falar com gerente</em>) open the <strong>Concierge</strong> 💬 automatically.
+                You can also open 💬 directly — same Redis session (cart + STM).
+                With <code>OPENAI_API_KEY</code> on the server the concierge uses GPT + tools; without it, deterministic demo + Redis.
+            </p>
             
             <!-- Loading indicator -->
             <div id="loadingIndicator" class="loading hidden">
                 <div class="spinner"></div>
-                <span>Buscando...</span>
+                <span>Searching…</span>
             </div>
 
             <!-- Search Info -->
@@ -48,8 +105,8 @@
             <!-- Debug Panel -->
             <div id="debugPanel" class="debug-panel hidden">
                 <div class="debug-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>🔍 Routing Debug</strong>
-                    <button id="feedbackBtn" class="btn btn-warning" style="font-size: 11px; padding: 2px 8px; cursor: pointer; border-radius: 4px; border: none; background: #fbbf24; color: #000; font-weight: bold; margin-left: auto;">👎 Rota Errada?</button>
+                    <strong>🔍 Routing debug</strong>
+                    <button id="feedbackBtn" class="btn btn-warning" style="font-size: 11px; padding: 2px 8px; cursor: pointer; border-radius: 4px; border: none; background: #fbbf24; color: #000; font-weight: bold; margin-left: auto;">👎 Wrong route?</button>
                 </div>
                 <div class="debug-grid">
                     <div class="debug-item">
@@ -85,44 +142,69 @@
 
         <!-- Quick Access Buttons -->
         <div class="quick-access">
-            <h3>🚀 Acesso Rápido</h3>
+            <h3>🚀 Quick access</h3>
             <div class="quick-buttons">
                 <button class="quick-btn" data-query="pix">💸 Pix</button>
-                <button class="quick-btn" data-query="pagar boleto">📄 Boleto</button>
-                <button class="quick-btn" data-query="fatura">🧾 Fatura</button>
-                <button class="quick-btn" data-query="investimentos">📈 Investir</button>
+                <button class="quick-btn" data-query="pagar boleto">📄 Pay slip</button>
+                <button class="quick-btn" data-query="fatura">🧾 Statement</button>
+                <button class="quick-btn" data-query="investimentos">📈 Invest</button>
                 <button class="quick-btn" data-query="iphone">📱 iPhone</button>
-                <button class="quick-btn" data-query="notebook">💻 Notebook</button>
-                <button class="quick-btn" data-query="emprestimo">💰 Empréstimo</button>
-                <button class="quick-btn" data-query="seguro">🛡️ Seguros</button>
+                <button class="quick-btn" data-query="notebook">💻 Laptop</button>
+                <button class="quick-btn" data-query="emprestimo">💰 Loan</button>
+                <button class="quick-btn" data-query="seguro">🛡️ Insurance</button>
             </div>
         </div>
 
         <!-- Performance Stats (Collapsible) -->
         <details class="stats-details">
-            <summary>📊 Performance & Debug Info</summary>
+            <summary>📊 Performance &amp; debug</summary>
             <div id="statsContent" class="stats-content">
                 <div class="stat-item">
-                    <span class="stat-label">Última busca:</span>
+                    <span class="stat-label">Last query:</span>
                     <span id="lastQuery">-</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Latência:</span>
+                    <span class="stat-label">Latency:</span>
                     <span id="latency">-</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Intent detectado:</span>
+                    <span class="stat-label">Detected intent:</span>
                     <span id="intent">-</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Resultados:</span>
+                    <span class="stat-label">Results:</span>
                     <span id="resultCount">-</span>
                 </div>
             </div>
         </details>
     </div>
+    </div>
+    </div>
+
+    <!-- Floating concierge -->
+    <button type="button" id="conciergeFab" class="concierge-fab" aria-label="Open concierge" title="Concierge">💬</button>
+    <div id="conciergePanel" class="concierge-panel hidden" role="dialog" aria-label="Concierge">
+        <div class="concierge-panel-header">
+            <div class="concierge-panel-title">
+                <span class="concierge-panel-icon">💬</span>
+                <div>
+                    <strong>Concierge</strong>
+                    <div id="conciergeMeta" class="concierge-meta">Redis · cart</div>
+                </div>
+            </div>
+            <div class="concierge-panel-actions">
+                <button type="button" id="conciergeMinimize" class="concierge-icon-btn" title="Minimize">─</button>
+                <button type="button" id="conciergeClose" class="concierge-icon-btn" title="Close">✕</button>
+            </div>
+        </div>
+        <div id="conciergeCart" class="concierge-cart"></div>
+        <div id="conciergeMessages" class="concierge-messages"></div>
+        <form id="conciergeForm" class="concierge-form">
+            <input type="text" id="conciergeInput" class="concierge-input" placeholder="Ask something or request a product…" autocomplete="off" maxlength="4000" />
+            <button type="submit" id="conciergeSend" class="concierge-send">Send</button>
+        </form>
+    </div>
 
     <script src="/static/app.js"></script>
 </body>
 </html>
-

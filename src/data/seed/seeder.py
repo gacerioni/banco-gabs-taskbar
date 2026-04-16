@@ -11,6 +11,7 @@ from pathlib import Path
 from .loader import load_routes, load_products, load_skus
 from ..models import route_schema, product_schema, sku_schema
 from ...search.vectorizer import embed_texts
+from ...chat.faq_rag import seed_concierge_faq
 
 
 # ============================================================================
@@ -147,6 +148,7 @@ def seed_all(redis_client: redis.Redis) -> Dict[str, int]:
         'routes': seed_routes(redis_client),
         'products': seed_products(redis_client),
         'skus': seed_skus(redis_client),
+        'concierge_faq': seed_concierge_faq(redis_client),
     }
     
     elapsed = time.time() - start
@@ -157,6 +159,7 @@ def seed_all(redis_client: redis.Redis) -> Dict[str, int]:
     print(f"   Routes: {counts['routes']}")
     print(f"   Products: {counts['products']}")
     print(f"   SKUs: {counts['skus']}")
+    print(f"   Concierge FAQ (RAG): {counts['concierge_faq']}")
     print("=" * 80)
     
     return counts

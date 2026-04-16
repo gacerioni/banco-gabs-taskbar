@@ -8,7 +8,7 @@ import redis
 import numpy as np
 import time
 import re
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 from .vectorizer import embed_text
 from .spellcheck import spellcheck_query
@@ -72,6 +72,20 @@ def _build_match_explanation(doc: Dict[str, Any], query: str, boost_type: str = 
 # HYBRID SEARCH
 # ============================================================================
 
+DEFAULT_HYBRID_INDEXES = ["idx:routes", "idx:products", "idx:skus"]
+
+
+def build_fts_prefix_query(query: str) -> str:
+    """
+    Build the same prefix FTS clause used inside FT.HYBRID (for concierge-only SKU text assist).
+    """
+    clean_query = re.sub(r"[^\w\s]", " ", query or "")
+    words = [w for w in clean_query.strip().split() if w]
+    if not words:
+        return "*"
+    return " ".join([f"{word}*" for word in words])
+
+
 def hybrid_search(
     redis_client: redis.Redis,
     query: str,
@@ -80,7 +94,8 @@ def hybrid_search(
     limit: int = 10,
     fts_weight: float = 0.7,
     vss_weight: float = 0.3,
-    rrf_k: int = 10  # RRF constant (LOWERED from 60 to 10 for better score spread!)
+    rrf_k: int = 10,  # RRF constant (LOWERED from 60 to 10 for better score spread!)
+    indexes: Optional[List[str]] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
     NATIVE HYBRID search using Redis 8.4+ FT.HYBRID with RRF.
@@ -103,6 +118,8 @@ def hybrid_search(
         fts_weight: FTS weight (passed through for metadata)
         vss_weight: VSS weight (passed through for metadata)
         rrf_k: RRF constant (higher = less weight on rank position)
+        indexes: RediSearch index names to query (default: routes, products, skus).
+            Pass e.g. ``["idx:skus"]`` for marketplace-only concierge search.
 
     Returns:
         Tuple of (results, search_metadata) where search_metadata includes
@@ -126,17 +143,10 @@ def hybrid_search(
     query_vector_bytes = np.array(query_embedding, dtype=np.float32).tobytes()
     search_metadata["embedding_ms"] = round((time.time() - embed_start) * 1000, 2)
 
-    # Clean query for FTS (remove punctuation that could be interpreted as operators like '-' which means NOT)
-    clean_query = re.sub(r'[^\w\s]', ' ', query)
-    words = [w for w in clean_query.strip().split() if w]
+    fts_query = build_fts_prefix_query(query)
 
-    if not words:
-        fts_query = "*"
-    else:
-        fts_query = " ".join([f"{word}*" for word in words])
-
-    # Search all indexes using FT.HYBRID
-    indexes = ['idx:routes', 'idx:products', 'idx:skus']
+    # Search selected indexes using FT.HYBRID
+    index_list = indexes if indexes is not None else DEFAULT_HYBRID_INDEXES
     all_results = []
     total_redis_time = 0.0
 
@@ -144,7 +154,7 @@ def hybrid_search(
     doc_keys_scores = []  # list of (doc_key, score)
 
     redis_start = time.time()
-    for idx_name in indexes:
+    for idx_name in index_list:
         try:
             start_time = time.time()
 
@@ -225,7 +235,7 @@ def hybrid_search(
     # SPELLCHECK FALLBACK: If no results, try spellcheck
     if not all_results:
         spell_start = time.time()
-        corrections = spellcheck_query(redis_client, query, indexes)
+        corrections = spellcheck_query(redis_client, query, index_list)
 
         if corrections:
             search_metadata["spellcheck_suggestions"] = corrections

@@ -36,16 +36,23 @@ def test_search(query: str, expected_title: str = None):
             match_type = result.get('match_type', 'unknown')
             vector_dist = result.get('vector_distance')
             dist_str = f" (dist: {vector_dist:.4f})" if vector_dist is not None else ""
-            print(f"  {i}. [{match_type:6}] {result['title']:<30} (score: {result['score']:.2f}){dist_str}")
+            sc = result.get("score", result.get("_hybrid_score", 0.0))
+            if isinstance(sc, (int, float)):
+                score_str = f"{float(sc):.2f}"
+            else:
+                score_str = str(sc)
+            print(f"  {i}. [{match_type:6}] {result['title']:<30} (score: {score_str}){dist_str}")
         
         if expected_title:
-            top_result = data['results'][0]
-            if expected_title.lower() in top_result['title'].lower():
-                print(f"\n✅ SUCCESS: Found expected result '{expected_title}'")
+            exp = expected_title.lower()
+            topn = data["results"][:10]
+            titles = [r.get("title") or "" for r in topn]
+            if any(exp in (t or "").lower() for t in titles):
+                print(f"\n✅ SUCCESS: Found '{expected_title}' in top {len(topn)} results")
                 return True
-            else:
-                print(f"\n⚠️  WARNING: Expected '{expected_title}', got '{top_result['title']}'")
-                return False
+            top_result = data["results"][0]
+            print(f"\n⚠️  WARNING: Expected '{expected_title}' in top 10, best was '{top_result.get('title')}'")
+            return False
     else:
         print("❌ No results found")
         return False

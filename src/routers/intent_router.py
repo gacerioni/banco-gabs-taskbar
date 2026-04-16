@@ -111,6 +111,43 @@ def force_reload_routers():
 
 
 # ============================================================================
+# LEXICAL OVERRIDES (semantic router can miss small wording variants)
+# ============================================================================
+
+def _lexical_chat_override(query: str) -> bool:
+    """
+    Phrases that should always be treated as conversational / escalation,
+    even if embedding distance to chat examples is ambiguous.
+    """
+    low = " ".join((query or "").lower().split())
+    if len(low) < 6:
+        return False
+    if "falar com" in low or "falar c/" in low:
+        if any(
+            w in low
+            for w in (
+                "gerente",
+                "gerência",
+                "gerencia",
+                "atendente",
+                "humano",
+                "pessoa",
+                "alguém",
+                "alguem",
+                "suporte",
+                "sac",
+            )
+        ):
+            return True
+    if "quero falar" in low or "preciso falar" in low:
+        if any(w in low for w in ("gerente", "atendente", "humano", "alguém", "alguem", "pessoa")):
+            return True
+    if "falar com alguém" in low or "falar com alguem" in low:
+        return True
+    return False
+
+
+# ============================================================================
 # MAIN ROUTING FUNCTION
 # ============================================================================
 
@@ -145,6 +182,9 @@ def route_query(query: str, default_lang: str = 'pt') -> Tuple[str, str, float]:
     """
     # Step 1: Detect language with intelligent fallback
     language = detect_language(query, default_lang=default_lang)
+
+    if _lexical_chat_override(query):
+        return language, "chat", 0.97
     
     # Step 2: Get language-specific router
     router = get_semantic_router(language)

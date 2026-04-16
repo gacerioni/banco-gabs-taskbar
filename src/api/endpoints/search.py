@@ -4,7 +4,7 @@ Unified search with semantic routing, latency breakdown, query caching
 """
 
 from fastapi import APIRouter, Query
-from typing import Dict, Any, List
+from typing import Dict, Any
 import time
 import uuid
 
@@ -13,10 +13,25 @@ from ...search.hybrid_search import hybrid_search
 from ...search.query_cache import get_cached_results, cache_results
 from ...routers import route_query
 from ...chat import handle_chat_query
-from ...core.models import UnifiedSearchResponse
+from ...core.config import config
 
 
 router = APIRouter()
+
+
+def _routing_meta(_language: str, intent: str, confidence: float) -> Dict[str, Any]:
+    """Flags when semantic intent confidence is below threshold (UI can nudge the user)."""
+    low = confidence < config.INTENT_CONFIDENCE_LOW
+    meta: Dict[str, Any] = {"routing_low_confidence": low}
+    if not low:
+        return meta
+    # English copy: demo UI is EN-first; conversation language may still be pt/en from the model.
+    meta["routing_hint"] = (
+        "Intent routing confidence is low. If this feels wrong, try short product-style keywords for search, "
+        "or open the Concierge 💬 panel for chat (Portuguese or English works in the demo data)."
+    )
+    meta["routing_intent_guess"] = intent
+    return meta
 
 
 @router.get("/search")
@@ -79,7 +94,8 @@ async def legacy_search(
 async def unified_search(
     q: str = Query(..., description="Search query"),
     limit: int = Query(10, ge=1, le=100, description="Max results"),
-    use_openai: bool = Query(False, description="Use OpenAI for chat (requires API key)"),
+    use_openai: bool = Query(False, description="Use OpenAI concierge for chat (requires API key)"),
+    session_id: str = Query("", description="Stable session id for concierge cart (persist client-side)"),
     fts_weight: float = Query(0.7, ge=0.0, le=1.0, description="Weight for text search"),
     vss_weight: float = Query(0.3, ge=0.0, le=1.0, description="Weight for semantic search"),
     rrf_k: int = Query(10, ge=1, le=100, description="RRF constant K")
@@ -103,16 +119,19 @@ async def unified_search(
     print(f"Routing: '{q}' -> {language.upper()} / {intent.upper()} ({confidence:.2%})")
     
     if intent == "chat":
-        # Chat intent - conversational AI
+        # Chat intent — concierge (Redis SKUs + cart) or mock
         chat_result = handle_chat_query(
             query=q,
             language=language,
-            use_openai=use_openai
+            use_openai=use_openai,
+            redis_client=redis_client,
+            session_id=session_id.strip() or None,
+            include_tool_trace=config.DEBUG,
         )
-        
+
         latency = (time.time() - start) * 1000
-        
-        return {
+
+        payload: Dict[str, Any] = {
             "tracking_id": tracking_id,
             "latency_ms": round(latency, 2),
             "query": q,
@@ -121,8 +140,14 @@ async def unified_search(
             "confidence": confidence,
             "chat_response": chat_result["response"],
             "chat_provider": chat_result["provider"],
-            "chat_model": chat_result.get("model", "mock")
+            "chat_model": chat_result.get("model", "mock"),
+            "session_id": chat_result.get("session_id"),
+            "cart": chat_result.get("cart"),
         }
+        if chat_result.get("tool_trace") is not None:
+            payload["tool_trace"] = chat_result["tool_trace"]
+        payload.update(_routing_meta(language, intent, confidence))
+        return payload
     
     else:
         # Search intent - check cache first
@@ -145,6 +170,7 @@ async def unified_search(
             if metadata.get("corrected_query"):
                 response["did_you_mean"] = metadata["corrected_query"]
                 response["spellcheck_suggestions"] = metadata["spellcheck_suggestions"]
+            response.update(_routing_meta(language, intent, confidence))
             return response
 
         # Search intent - hybrid search
@@ -182,5 +208,6 @@ async def unified_search(
             response["did_you_mean"] = metadata["corrected_query"]
             response["spellcheck_suggestions"] = metadata["spellcheck_suggestions"]
 
+        response.update(_routing_meta(language, intent, confidence))
         return response
 

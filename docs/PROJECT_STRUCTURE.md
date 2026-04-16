@@ -1,4 +1,4 @@
-# 📁 Project Structure - Banco Inter Taskbar
+# 📁 Project Structure - Redis Global Search demo
 
 ## 🎯 Quick Navigation Guide
 
@@ -34,7 +34,7 @@
 ## 📂 Complete Directory Structure
 
 ```
-banco-inter-taskbar/
+redis-global-search-demo/
 ├── src/                                # 🔥 ALL SOURCE CODE HERE
 │   ├── routers/                        # Language + Intent routing
 │   │   ├── language_detector.py       # Detects PT/EN/ES

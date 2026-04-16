@@ -1,5 +1,5 @@
 """
-Banco Inter Taskbar - Main Entry Point
+Redis Global Search Taskbar - Main Entry Point
 Clean, modular architecture with Redis 8.6 HYBRID search
 
 All business logic is in src/ modules
@@ -26,7 +26,14 @@ from src.search.autocomplete import setup_autocomplete
 from src.search.vectorizer import get_search_vectorizer
 from src.routers.language_detector import get_language_detector
 from src.routers.intent_router import get_semantic_router
-from src.api import health_router, seed_router, search_router, autocomplete_router, feedback_router
+from src.api import (
+    health_router,
+    seed_router,
+    search_router,
+    autocomplete_router,
+    feedback_router,
+    concierge_chat_router,
+)
 from src.api.endpoints.admin import router as admin_router
 
 
@@ -40,7 +47,7 @@ async def lifespan(app: FastAPI):
     
     # STARTUP
     print("=" * 80)
-    print("🏦 Banco Inter Taskbar - Starting...")
+    print("🔍 Redis Global Search Taskbar - Starting...")
     print("=" * 80)
     print(f"📍 Redis: {config.REDIS_URL[:40]}...")
     print(f"🤖 Embedding Model: {config.EMBEDDING_MODEL}")
@@ -111,8 +118,8 @@ async def lifespan(app: FastAPI):
 # ============================================================================
 
 app = FastAPI(
-    title="Banco Inter Taskbar",
-    description="Semantic search with Redis 8.6 HYBRID scoring (Customer 360)",
+    title="Redis Global Search Taskbar",
+    description="Semantic search with Redis 8.6 HYBRID scoring (Customer 360 demo)",
     version="2.0.0-refactored",
     lifespan=lifespan
 )
@@ -138,6 +145,7 @@ app.include_router(search_router, tags=["Search"])
 app.include_router(autocomplete_router, tags=["Search"])
 app.include_router(admin_router, tags=["Admin"])
 app.include_router(feedback_router, tags=["Feedback"])
+app.include_router(concierge_chat_router, tags=["Concierge"])
 
 
 # Root endpoint - serve frontend

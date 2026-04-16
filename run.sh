@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🏦 Banco Inter Taskbar Search - Startup Script
+# Redis Global Search Taskbar - Startup Script
 # This script starts the FastAPI server (Redis Cloud configured in main.py)
 
 set -e  # Exit on error
@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🏦 Banco Inter Taskbar Search - Starting...${NC}\n"
+echo -e "${BLUE}🔍 Redis Global Search Taskbar - Starting...${NC}\n"
 
 # Check if virtual environment exists
 if [ ! -d ".venv" ]; then

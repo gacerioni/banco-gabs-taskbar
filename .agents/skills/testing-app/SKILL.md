@@ -1,4 +1,4 @@
-# Testing Banco Inter Taskbar
+# Testing Redis Global Search Taskbar
 
 ## Prerequisites
 
@@ -68,7 +68,7 @@ A healthy search response includes:
 2. Check logs: `docker compose logs --tail=30`
 3. Verify "Server ready!" in logs
 4. Test search: `curl "http://localhost:8000/api/search?q=pix&limit=2"`
-5. Verify `.env` is NOT in the image: `docker compose exec taskbar ls /app/.env` should fail
+5. Verify `.env` is NOT in the image: `docker compose exec app ls /app/.env` should fail
 
 ## Default Embedding Model
 

@@ -55,9 +55,17 @@ def get_cached_results(
         cached = redis_client.get(cache_key)
         if cached:
             data = json.loads(cached)
+            results = data.get("results") or []
+            # Do not serve stale empty caches (e.g. after FT.HYBRID failure or Redis upgrade)
+            if len(results) == 0:
+                try:
+                    redis_client.delete(cache_key)
+                except Exception:
+                    pass
+                return None
             metadata = data.get("metadata", {})
             metadata["cache_hit"] = True
-            return data["results"], metadata
+            return results, metadata
     except Exception as e:
         print(f"Cache read error: {e}")
 
@@ -113,6 +121,10 @@ def cache_results(
         metadata: Search metadata to cache
     """
     if not config.CACHE_ENABLED:
+        return
+
+    # Avoid caching empty result sets (masks transient failures and locks users out for TTL)
+    if not results:
         return
 
     cache_key = _build_cache_key(query, lang, limit, fts_weight, vss_weight, rrf_k)

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,8 +17,8 @@
     <div class="admin-container">
         <aside class="sidebar">
             <div class="logo">
-                <h1>🏦 Admin</h1>
-                <p>Banco Inter</p>
+                <h1>⚙️ Admin</h1>
+                <p>Redis Global Search</p>
             </div>
             <nav class="menu">
                 <a href="/admin" class="menu-item">📊 Dashboard</a>
@@ -28,7 +28,7 @@
                 <hr>
                 <a href="/admin/router" class="menu-item active">🧠 Router Examples</a>
                 <hr>
-                <a href="/" class="menu-item">← Voltar</a>
+                <a href="/" class="menu-item">← Back</a>
             </nav>
         </aside>
         
@@ -39,13 +39,13 @@
             
             <header class="page-header">
                 <h1>🧠 Router Examples</h1>
-                <p>Treinar o detector de intenção (SEARCH vs CHAT) • 🔥 HOT RELOAD ativo - mudanças aplicadas sem restart!</p>
+                <p>Train the intent detector (SEARCH vs CHAT) • 🔥 HOT RELOAD — changes apply without restart!</p>
             </header>
             
             <div class="stats">
-                <div class="stat-badge">PT: <strong id="statPT">0</strong> exemplos</div>
-                <div class="stat-badge">EN: <strong id="statEN">0</strong> exemplos</div>
-                <div class="stat-badge">ES: <strong id="statES">0</strong> exemplos</div>
+                <div class="stat-badge">PT: <strong id="statPT">0</strong> examples</div>
+                <div class="stat-badge">EN: <strong id="statEN">0</strong> examples</div>
+                <div class="stat-badge">ES: <strong id="statES">0</strong> examples</div>
                 <div class="stat-badge">SEARCH: <strong id="statSearch">0</strong></div>
                 <div class="stat-badge">CHAT: <strong id="statChat">0</strong></div>
             </div>
@@ -54,56 +54,56 @@
                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                     <div class="filters">
                         <select id="filterLang" onchange="loadExamples()">
-                            <option value="">Todos idiomas</option>
+                            <option value="">All languages</option>
                             <option value="pt">PT</option>
                             <option value="en">EN</option>
                             <option value="es">ES</option>
                         </select>
                         <select id="filterIntent" onchange="loadExamples()">
-                            <option value="">Todas intenções</option>
+                            <option value="">All intents</option>
                             <option value="search">SEARCH</option>
                             <option value="chat">CHAT</option>
                         </select>
                     </div>
                     <div>
-                        <button class="btn btn-primary" onclick="createNew()">➕ Novo Exemplo</button>
+                        <button class="btn btn-primary" onclick="createNew()">➕ New example</button>
                     </div>
                 </div>
                 
                 <table>
                     <thead>
                         <tr>
-                            <th>Exemplo</th>
-                            <th>Idioma</th>
+                            <th>Example</th>
+                            <th>Language</th>
                             <th>Intent</th>
-                            <th>Categoria</th>
-                            <th>Arquivo</th>
-                            <th>Ações</th>
+                            <th>Category</th>
+                            <th>File</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="examplesBody">
-                        <tr><td colspan="6" style="text-align:center;">Carregando...</td></tr>
+                        <tr><td colspan="6" style="text-align:center;">Loading…</td></tr>
                     </tbody>
                 </table>
                 
                 <div style="margin-top: 20px; color: #718096; font-size: 14px;">
-                    Total: <strong id="totalExamples">0</strong> exemplos
+                    Total: <strong id="totalExamples">0</strong> examples
                 </div>
             </div>
         </main>
     </div>
     
-    <!-- Modal Create -->
+    <!-- Create modal -->
     <div id="modal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
-                <h2>Novo Exemplo</h2>
+                <h2>New example</h2>
                 <button onclick="closeModal()" class="btn-close">×</button>
             </div>
             <form id="exampleForm" onsubmit="saveExample(event)">
                 <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
                     <div class="form-group">
-                        <label>Exemplo (query do usuário) *</label>
+                        <label>Example (user query) *</label>
                         <input type="text" name="example" required placeholder="pix">
                     </div>
                     <div class="form-group">
@@ -114,7 +114,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Idioma *</label>
+                        <label>Language *</label>
                         <select name="language" required>
                             <option value="pt">PT</option>
                             <option value="en">EN</option>
@@ -122,13 +122,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Categoria (opcional)</label>
+                        <label>Category (opcional)</label>
                         <input type="text" name="category" placeholder="action, question, support...">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="closeModal()" class="btn">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" onclick="closeModal()" class="btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>

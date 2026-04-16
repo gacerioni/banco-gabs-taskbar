@@ -1,5 +1,5 @@
 """
-Pydantic Models for Banco Inter Taskbar
+Pydantic models for Redis Global Search Taskbar
 All API request/response models in one place
 """
 

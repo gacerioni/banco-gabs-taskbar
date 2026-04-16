@@ -1,8 +1,19 @@
+# App only — point REDIS_URL at your Redis (Cloud, Stack, etc.).
+# Example:
+#   export REDIS_URL='redis://default:password@host:6379/0'
+#   docker compose up --build
+
 services:
-  taskbar:
-    build: .
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gacerioni/gabs-global-search-concierge-redis:latest
     ports:
-      - "8000:8000"
+      - "${APP_PORT:-8000}:8000"
     environment:
-      - REDIS_URL=${REDIS_URL}
+      REDIS_URL: ${REDIS_URL}
+      APP_HOST: ${APP_HOST:-0.0.0.0}
+      APP_PORT: ${APP_PORT:-8000}
+      DEBUG: ${DEBUG:-false}
     restart: unless-stopped

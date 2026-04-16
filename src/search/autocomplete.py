@@ -24,8 +24,11 @@ def setup_autocomplete(redis_client: redis.Redis) -> int:
     print("=" * 80)
     print("🔍 Setting up Autocomplete")
     print("=" * 80)
-    
-    ac_key = "ac:taskbar"
+
+    # Drop legacy suggestion key from older demos (prefix rename)
+    redis_client.delete("ac:taskbar")
+
+    ac_key = "ac:global_search"
     count = 0
     
     # Load all data
@@ -92,7 +95,7 @@ def autocomplete_search(redis_client: redis.Redis, query: str, limit: int = 10) 
     if len(query) < 2:
         return []
     
-    ac_key = "ac:taskbar"
+    ac_key = "ac:global_search"
     
     try:
         # FT.SUGGET key prefix [FUZZY] [WITHSCORES] [WITHPAYLOADS] [MAX num]

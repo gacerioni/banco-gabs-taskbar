@@ -1,0 +1,47 @@
+[
+  {
+    "id": "faq_001",
+    "question": "O que é esta barra de busca global?",
+    "answer": "É uma demo Redis: busca híbrida (texto + vetor) em rotas de exemplo, produtos e SKUs de marketplace, com roteamento semântico entre busca rápida e modo conversa (concierge)."
+  },
+  {
+    "id": "faq_002",
+    "question": "Como funciona a busca híbrida?",
+    "answer": "O Redis combina relevância textual (BM25) e similaridade de embeddings com fusão RRF (Reciprocal Rank Fusion), típico de Redis 8+ com RediSearch."
+  },
+  {
+    "id": "faq_003",
+    "question": "O que é o carrinho nesta demo?",
+    "answer": "O carrinho fica no Redis (prefixo demo:cart:) por sessão. O concierge só adiciona SKUs que existem no inventário indexado (idx:skus)."
+  },
+  {
+    "id": "faq_004",
+    "question": "Preciso de chave OpenAI?",
+    "answer": "Para o concierge com ferramentas (inventário + carrinho) sim. Sem chave, a demo ainda mostra resultados de SKUs e o estado do carrinho de forma determinística."
+  },
+  {
+    "id": "faq_005",
+    "question": "O que é Pix neste conjunto de dados?",
+    "answer": "Nos dados de exemplo, Pix é uma rota fictícia de pagamentos instantâneos — serve só para ilustrar busca e deep links de demo."
+  },
+  {
+    "id": "faq_006",
+    "question": "Meus dados ficam salvos para sempre?",
+    "answer": "Não: é ambiente de demo. Sessão de chat (STM) e carrinho usam chaves Redis com prefixo demo: — em produção você definiria TTL e políticas de privacidade."
+  },
+  {
+    "id": "faq_007",
+    "question": "Posso confiar nas respostas sobre preços?",
+    "answer": "Preços e estoque vêm apenas das ferramentas que leem o Redis (SKUs reindexados). Se a resposta não citar inventário, peça para consultar o produto de novo."
+  },
+  {
+    "id": "faq_008",
+    "question": "O que é memória de curto prazo (STM) aqui?",
+    "answer": "O histórico recente da conversa fica no Redis via LangChain RedisChatMessageHistory, para o modelo lembrar o que você disse nas últimas mensagens nesta sessão."
+  },
+  {
+    "id": "faq_009",
+    "question": "Quero falar com um gerente ou atendente humano",
+    "answer": "Esta interface é só demonstração técnica (Redis + busca + concierge). Não há fila humana nem ligação real. Em produção, o app do seu banco ou loja teria o canal oficial (chat, telefone ou agência) para escalação."
+  }
+]

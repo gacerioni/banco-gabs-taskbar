@@ -1,4 +1,4 @@
-# 🏦 Banco Inter - Global Search Taskbar
+# 🔍 Redis Global Search — Taskbar Demo
 
 **Customer 360 Global Search Demo** - Lightning-fast hybrid search (text + semantic) for banking routes, marketplace products, and financial services.
 
@@ -174,7 +174,7 @@ python tests/benchmark.py
 ## 📁 Project Structure
 
 ```
-banco-inter-taskbar/
+redis-global-search-demo/
 ├── main.py              # FastAPI server + Redis logic
 ├── routes.jsonl         # 15 banking routes/actions
 ├── skus.jsonl           # 15 marketplace products
@@ -183,7 +183,7 @@ banco-inter-taskbar/
 ├── README.md            # This file
 ├── static/              # Frontend assets
 │   ├── index.html       # Frontend UI
-│   ├── styles.css       # Banco Inter theme (orange)
+│   ├── styles.css       # Demo UI theme (orange)
 │   └── app.js           # Search logic + autocomplete
 └── tests/               # Tests and benchmarks
     ├── benchmark.py           # Performance testing script
@@ -226,7 +226,7 @@ banco-inter-taskbar/
 
 ## 🎨 UI Features
 
-- **🎨 Banco Inter Theme**: Orange gradient (#FF7A00)
+- **🎨 Demo UI theme**: Orange gradient (#FF7A00)
 - **⚡ Real-time Autocomplete**: Dropdown with type badges
 - **🎯 Typed Result Cards**: Different styling per type
 - **🔘 Quick Access**: One-click common queries
@@ -290,7 +290,7 @@ Health check
 
 ## 📝 License
 
-MIT License - Demo project for Banco Inter
+MIT License - Demo project for Redis Global Search
 
 ---
 

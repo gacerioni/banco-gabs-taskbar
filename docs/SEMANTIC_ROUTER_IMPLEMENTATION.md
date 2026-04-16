@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-Implementação de roteador semântico multilíngue para o Banco Inter Taskbar usando **Stack C**:
+Implementação de roteador semântico multilíngue para o Redis Global Search demo usando **Stack C**:
 
 ```
 Stack C: MiniLM router + Qwen3 search
@@ -56,7 +56,7 @@ User Query: "como faço pra investir em CDB?"
 ## 📁 Arquivos Criados
 
 ```
-banco-inter-taskbar/
+redis-global-search-demo/
 ├── router_config.py          # Configuração de rotas e detecção de idioma
 ├── semantic_router.py         # Roteador semântico principal
 ├── chat_handler.py            # Handler de chat (mock + OpenAI)

@@ -1,4 +1,4 @@
-# Testing: Banco Inter Taskbar Search
+# Testing: Redis Global Search Taskbar
 
 ## Overview
 FastAPI app with Redis 8.4+ hybrid search (FT.HYBRID), semantic routing, autocomplete, and query caching. Frontend is vanilla JS served at `/`.

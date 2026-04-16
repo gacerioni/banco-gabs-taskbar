@@ -1,5 +1,5 @@
 """
-Configuration module for Banco Inter Taskbar Search
+Configuration module for Redis Global Search Taskbar
 Reads from environment variables with sensible defaults
 """
 import os
@@ -76,6 +76,8 @@ class Config:
     SEMANTIC_ROUTER_DISTANCE_THRESHOLD: float = float(
         os.getenv("SEMANTIC_ROUTER_DISTANCE_THRESHOLD", "0.55")
     )
+    # Intent confidence from semantic router (0–1). Below this, API includes routing_hint for the UI.
+    INTENT_CONFIDENCE_LOW: float = float(os.getenv("INTENT_CONFIDENCE_LOW", "0.58"))
     
     # ============================================================================
     # OPENAI CONFIGURATION (for chat route)
@@ -99,6 +101,18 @@ class Config:
     APP_HOST: str = os.getenv("APP_HOST", "0.0.0.0")
     APP_PORT: int = int(os.getenv("APP_PORT", "8000"))
     DEBUG: bool = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
+
+    # Concierge cart TTL (seconds) — documented for operators; cart module uses constant default
+    CART_TTL_SECONDS: int = int(os.getenv("CART_TTL_SECONDS", "604800"))
+
+    # Concierge FAQ RAG (Redis string JSON + same HF embeddings as search)
+    CONCIERGE_FAQ_REDIS_KEY: str = os.getenv("CONCIERGE_FAQ_REDIS_KEY", "demo:concierge:faq")
+    CONCIERGE_FAQ_TOP_K: int = int(os.getenv("CONCIERGE_FAQ_TOP_K", "3"))
+
+    # Concierge STM (langchain-redis RedisChatMessageHistory)
+    CONCIERGE_STM_PREFIX: str = os.getenv("CONCIERGE_STM_PREFIX", "demo:stm")
+    CONCIERGE_STM_INDEX: str = os.getenv("CONCIERGE_STM_INDEX", "idx:demo_stm_chat")
+    CONCIERGE_STM_MAX_MESSAGES: int = int(os.getenv("CONCIERGE_STM_MAX_MESSAGES", "12"))
     
     # CORS settings
     CORS_ORIGINS: list = os.getenv(
@@ -127,7 +141,7 @@ class Config:
     def print_config(cls) -> None:
         """Print current configuration (for debugging)"""
         print("=" * 60)
-        print("🏦 Banco Inter Taskbar Search - Configuration")
+        print("🔍 Redis Global Search Taskbar - Configuration")
         print("=" * 60)
         print(f"Redis URL: {cls._mask_password(cls.REDIS_URL)}")
         print(f"Embedding Model: {cls.EMBEDDING_MODEL}")

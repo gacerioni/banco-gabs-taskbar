@@ -1,4 +1,4 @@
-# 🏦 Banco Inter - Busca Global Taskbar
+# 🔍 Redis Global Search — Taskbar Demo
 
 ## 📋 Índice
 - [Sobre o Projeto](#sobre-o-projeto)
@@ -13,7 +13,7 @@
 
 ## 🎯 Sobre o Projeto
 
-Esta é uma **demo de busca global** para o conceito de **Customer 360** do Banco Inter. O sistema permite que usuários busquem de forma inteligente por:
+Esta é uma **demo de busca global** para o conceito de **Customer 360** (dados fictícios). O sistema permite que usuários busquem de forma inteligente por:
 
 - **Rotas bancárias** (ações como Pix, boleto, extrato, investimentos)
 - **Produtos do marketplace** (iPhone, notebook, TV, fones)
@@ -69,7 +69,7 @@ Demonstrar como construir uma **busca global de alta performance** usando:
 ### Frontend
 - **HTML5 + CSS3** - Interface responsiva
 - **Vanilla JavaScript** - Sem dependências de frameworks
-- **Tema Banco Inter** - Gradiente laranja (#FF7A00)
+- **Tema visual** — Gradiente laranja (#FF7A00)
 
 ### Infraestrutura
 - **Redis Cloud** - Redis gerenciado (ou local)
@@ -188,10 +188,10 @@ Antes de começar, você precisa ter instalado:
 ```bash
 # Se você tem o projeto em um repositório Git
 git clone <url-do-repositorio>
-cd banco-inter-taskbar
+cd redis-global-search-demo
 
 # Ou se já está na pasta do projeto
-cd /caminho/para/banco-inter-taskbar
+cd /caminho/para/redis-global-search-demo
 ```
 
 ### Passo 2: Criar Ambiente Virtual Python
@@ -294,7 +294,7 @@ Abra seu navegador e acesse:
 http://localhost:8000
 ```
 
-Você deve ver a interface de busca do Banco Inter! 🎉
+Você deve ver a interface de busca da demo! 🎉
 
 
 ---
@@ -397,7 +397,7 @@ curl "http://localhost:8000/health"
 ## 🎨 Estrutura do Projeto
 
 ```
-banco-inter-taskbar/
+redis-global-search-demo/
 ├── main.py                 # Backend FastAPI + lógica Redis
 ├── config.py               # Configurações (Redis URL, etc)
 ├── requirements.txt        # Dependências Python
@@ -410,7 +410,7 @@ banco-inter-taskbar/
 │
 ├── static/                 # Frontend
 │   ├── index.html          # Interface web
-│   ├── styles.css          # Tema Banco Inter
+│   ├── styles.css          # Tema visual da demo
 │   └── app.js              # Lógica de busca + autocomplete
 │
 └── tests/                  # Testes automatizados
@@ -486,7 +486,7 @@ Depois de rodar a demo, você pode:
 
 ## 📝 Licença
 
-MIT License - Projeto demo para Banco Inter
+MIT License - Demo Redis Global Search
 
 ---
 

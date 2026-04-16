@@ -4,10 +4,17 @@ Test script to verify semantic embeddings work correctly
 """
 
 import sys
-sys.path.insert(0, '.')
+from pathlib import Path
 
-from main import embed_text_real
+# Project root on sys.path (tests/ is one level below root)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import numpy as np
+from src.search.vectorizer import embed_text
 
 def cosine_similarity(a, b):
     """Calculate cosine similarity between two vectors"""
@@ -35,7 +42,8 @@ def test_semantic_similarity():
     print("\n📊 Generating embeddings...")
     embeddings = {}
     for phrase in test_phrases:
-        embeddings[phrase] = embed_text_real(phrase)
+        vec = embed_text(phrase)
+        embeddings[phrase] = np.array(vec, dtype=np.float32)
         print(f"  ✓ {phrase}")
     
     print("\n📈 Similarity Matrix:")

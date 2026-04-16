@@ -12,6 +12,7 @@ from ...data.redis_indexes import create_all_indexes
 from ...data.seed.seeder import seed_all
 from ...data.synonyms import apply_synonyms_to_all
 from ...search.autocomplete import setup_autocomplete
+from ...search.query_cache import invalidate_search_cache
 from ...routers.intent_router import force_reload_routers
 
 
@@ -35,6 +36,7 @@ async def seed() -> Dict[str, Any]:
         
         # Seed data
         print("🌱 Seeding data...")
+        invalidate_search_cache(redis_client)
         counts = seed_all(redis_client)
         
         # Apply synonyms

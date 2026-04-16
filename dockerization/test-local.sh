@@ -3,7 +3,7 @@
 
 set -e
 
-IMAGE_NAME="banco-inter-search-local"
+IMAGE_NAME="redis-global-search-local"
 VERSION="test"
 
 echo "🐳 Building local Docker image for testing..."

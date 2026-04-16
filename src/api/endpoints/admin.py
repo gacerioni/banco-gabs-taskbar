@@ -84,6 +84,26 @@ async def create_route(route: Dict[str, Any]) -> Dict[str, Any]:
     key = f"route:{route['id']}"
     redis_client.json().set(key, '$', route)
 
+    # 1. Instantly update Autocomplete
+    title = route.get('title', '').strip()
+    if title:
+        try:
+            score = route.get('popularity', 1.0)
+            payload = f"route:{route['id']}"
+            redis_client.execute_command("FT.SUGADD", "ac:global_search", title, score, "PAYLOAD", payload)
+        except Exception as e:
+            print(f"⚠️ Error adding to autocomplete: {e}")
+
+    # 2. Append to JSONL seed file so it persists
+    import json
+    try:
+        route_copy = route.copy()
+        route_copy.pop('embedding', None) # Don't save large embeddings to JSONL
+        with open('src/data/seed/routes.jsonl', 'a', encoding='utf-8') as f:
+            f.write(json.dumps(route_copy, ensure_ascii=False) + '\n')
+    except Exception as e:
+        print(f"⚠️ Error saving to JSONL: {e}")
+
     invalidate_search_cache(redis_client)
     print(f"✅ Created route: {route['id']}")
 
@@ -220,6 +240,26 @@ async def create_product(product: Dict[str, Any]) -> Dict[str, Any]:
     key = f"product:{product['id']}"
     redis_client.json().set(key, '$', product)
 
+    # 1. Instantly update Autocomplete
+    title = product.get('title', '').strip()
+    if title:
+        try:
+            score = product.get('popularity', 1.0)
+            payload = f"product:{product['id']}"
+            redis_client.execute_command("FT.SUGADD", "ac:global_search", title, score, "PAYLOAD", payload)
+        except Exception as e:
+            print(f"⚠️ Error adding to autocomplete: {e}")
+
+    # 2. Append to JSONL seed file so it persists
+    import json
+    try:
+        product_copy = product.copy()
+        product_copy.pop('embedding', None) # Don't save large embeddings to JSONL
+        with open('src/data/seed/products.jsonl', 'a', encoding='utf-8') as f:
+            f.write(json.dumps(product_copy, ensure_ascii=False) + '\n')
+    except Exception as e:
+        print(f"⚠️ Error saving to JSONL: {e}")
+
     invalidate_search_cache(redis_client)
     print(f"✅ Created product: {product['id']}")
 
@@ -318,6 +358,26 @@ async def create_sku(sku: Dict[str, Any]) -> Dict[str, Any]:
     key = f"sku:{sku['id']}"
     redis_client.json().set(key, '$', sku)
 
+    # 1. Instantly update Autocomplete
+    title = sku.get('title', '').strip()
+    if title:
+        try:
+            score = sku.get('popularity', 1.0)
+            payload = f"sku:{sku['id']}"
+            redis_client.execute_command("FT.SUGADD", "ac:global_search", title, score, "PAYLOAD", payload)
+        except Exception as e:
+            print(f"⚠️ Error adding to autocomplete: {e}")
+
+    # 2. Append to JSONL seed file so it persists
+    import json
+    try:
+        sku_copy = sku.copy()
+        sku_copy.pop('embedding', None) # Don't save large embeddings to JSONL
+        with open('src/data/seed/skus.jsonl', 'a', encoding='utf-8') as f:
+            f.write(json.dumps(sku_copy, ensure_ascii=False) + '\n')
+    except Exception as e:
+        print(f"⚠️ Error saving to JSONL: {e}")
+
     invalidate_search_cache(redis_client)
     print(f"✅ Created SKU: {sku['id']}")
 
@@ -342,6 +402,26 @@ async def update_sku(sku_id: str, sku: Dict[str, Any]) -> Dict[str, Any]:
     sku['embedding'] = embedding
 
     redis_client.json().set(key, '$', sku)
+
+    # 1. Instantly update Autocomplete
+    title = sku.get('title', '').strip()
+    if title:
+        try:
+            score = sku.get('popularity', 1.0)
+            payload = f"sku:{sku['id']}"
+            redis_client.execute_command("FT.SUGADD", "ac:global_search", title, score, "PAYLOAD", payload)
+        except Exception as e:
+            print(f"⚠️ Error adding to autocomplete: {e}")
+
+    # 2. Append to JSONL seed file so it persists
+    import json
+    try:
+        sku_copy = sku.copy()
+        sku_copy.pop('embedding', None) # Don't save large embeddings to JSONL
+        with open('src/data/seed/skus.jsonl', 'a', encoding='utf-8') as f:
+            f.write(json.dumps(sku_copy, ensure_ascii=False) + '\n')
+    except Exception as e:
+        print(f"⚠️ Error saving to JSONL: {e}")
 
     invalidate_search_cache(redis_client)
     print(f"✅ Updated SKU: {sku_id}")

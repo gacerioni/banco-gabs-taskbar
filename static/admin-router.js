@@ -41,7 +41,7 @@ async function loadExamples() {
         
     } catch (error) {
         console.error('Error loading examples:', error);
-        alert('Erro ao carregar exemplos: ' + error.message);
+        alert('Failed to load examples: ' + error.message);
     }
 }
 
@@ -75,16 +75,16 @@ async function saveExample(event) {
         const data = await response.json();
 
         // HOT RELOAD SUCCESS!
-        alert('✅ Exemplo adicionado com sucesso!\n\n🔥 HOT RELOAD ATIVO: Mudanças aplicadas IMEDIATAMENTE, sem restart!\n\n📝 ' + data.note);
+        alert('✅ Example added successfully!\n\n🔥 HOT RELOAD: changes apply immediately, no restart!\n\n📝 ' + data.note);
         closeModal();
         loadExamples();
     } catch (error) {
-        alert('❌ Erro ao salvar: ' + error.message);
+        alert('❌ Save failed: ' + error.message);
     }
 }
 
 async function deleteExample(id) {
-    if (!confirm(`🗑️ Deletar exemplo "${id}"?\n\nEssa ação não pode ser desfeita!`)) return;
+    if (!confirm(`🗑️ Delete example "${id}"?\n\nThis cannot be undone.`)) return;
 
     try {
         const response = await fetch(`/admin/api/router-examples/${encodeURIComponent(id)}`, {
@@ -94,10 +94,10 @@ async function deleteExample(id) {
         const data = await response.json();
 
         // Router will auto-reload on next query
-        alert('✅ ' + data.message + '\n\n🔄 Router recarregará automaticamente na próxima consulta!\n\n📝 ' + data.note);
+        alert('✅ ' + data.message + '\n\n🔄 The router reloads automatically on the next request.\n\n📝 ' + data.note);
         loadExamples();
     } catch (error) {
-        alert('❌ Erro ao deletar: ' + error.message);
+        alert('❌ Delete failed: ' + error.message);
     }
 }
 

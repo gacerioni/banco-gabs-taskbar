@@ -1,5 +1,5 @@
 """
-Benchmark script for Banco Inter Task Bar
+Benchmark script for Redis Global Search Taskbar
 Tests latency (p50/p95/p99) and result-type distribution
 """
 
@@ -63,7 +63,7 @@ def run_benchmark(queries: List[str] = TEST_QUERIES, iterations: int = 3):
     Returns:
         Dict with benchmark results
     """
-    print("🚀 Starting Banco Inter Task Bar Benchmark")
+    print("🚀 Starting Redis Global Search Taskbar Benchmark")
     print(f"📊 Testing {len(queries)} queries × {iterations} iterations = {len(queries) * iterations} total requests")
     print("=" * 70)
     

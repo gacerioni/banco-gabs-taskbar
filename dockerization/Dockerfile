@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Banco Inter Taskbar Search
+# Multi-stage Dockerfile for Redis Global Search Search
 # Builds for linux/amd64 and linux/arm64 (Apple Silicon support)
 
 FROM python:3.11-slim as builder

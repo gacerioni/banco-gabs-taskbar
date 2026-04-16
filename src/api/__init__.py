@@ -8,7 +8,8 @@ from .endpoints import (
     seed_router,
     search_router,
     autocomplete_router,
-    feedback_router
+    feedback_router,
+    concierge_chat_router,
 )
 
 __all__ = [
@@ -16,5 +17,6 @@ __all__ = [
     'seed_router',
     'search_router',
     'autocomplete_router',
-    'feedback_router'
+    'feedback_router',
+    'concierge_chat_router',
 ]

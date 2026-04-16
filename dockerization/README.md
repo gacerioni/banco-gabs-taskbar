@@ -1,4 +1,4 @@
-# 🐳 Docker Deployment - Banco Inter Taskbar Search
+# 🐳 Docker Deployment - Redis Global Search Search
 
 Multi-platform Docker image with support for **linux/amd64** and **linux/arm64** (Apple Silicon).
 
@@ -49,7 +49,7 @@ Replace `gacerioni/gabs-redis-taskbar-global-search:v0.0.1-gabs` with your Docke
 
 ```bash
 docker run -d \
-  --name banco-inter-search \
+  --name redis-global-search \
   -p 8092:8092 \
   -e REDIS_URL=redis://your-redis-host:6379 \
   gacerioni/gabs-redis-taskbar-global-search:v0.0.1-gabs
@@ -114,7 +114,7 @@ The app requires **Redis Stack 7.2+** or **Redis 8.4+** with:
 
 ```bash
 docker run -d \
-  --name banco-inter-search \
+  --name redis-global-search \
   -p 8092:8092 \
   -e REDIS_URL=redis://default:your_password@redis-xxxxx.cloud.redislabs.com:19891 \
   gacerioni/gabs-redis-taskbar-global-search:v0.0.1-gabs
@@ -128,7 +128,7 @@ docker run -d \
 
 ```bash
 # Check logs
-docker logs banco-inter-search
+docker logs redis-global-search
 
 # Common issues:
 # 1. Redis not reachable → check REDIS_URL

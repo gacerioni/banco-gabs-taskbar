@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Banco Inter Taskbar</title>
+    <title>Admin — Redis Global Search</title>
     <link rel="stylesheet" href="/static/admin-styles.css">
 </head>
 <body>
     <div class="admin-container">
         <aside class="sidebar">
             <div class="logo">
-                <h1>🏦 Admin</h1>
-                <p>Banco Inter</p>
+                <h1>⚙️ Admin</h1>
+                <p>Redis Global Search</p>
             </div>
             
             <nav class="menu">
@@ -29,7 +29,7 @@
                 </a>
                 <hr>
                 <a href="/" class="menu-item">
-                    ← Voltar para busca
+                    ← Back to search
                 </a>
             </nav>
         </aside>
@@ -37,7 +37,7 @@
         <main class="content">
             <header class="page-header">
                 <h1>Dashboard</h1>
-                <p>Visão geral do sistema</p>
+                <p>System overview</p>
             </header>
             
             <div class="stats-grid">
@@ -69,62 +69,62 @@
                     <div class="stat-icon">📊</div>
                     <div class="stat-info">
                         <h3 id="totalCount">-</h3>
-                        <p>Total Items</p>
+                        <p>Total items</p>
                     </div>
                 </div>
             </div>
             
             <div class="actions-grid">
                 <div class="action-card">
-                    <h3>🔗 Gerenciar Routes</h3>
-                    <p>Adicione, edite ou remova rotas do aplicativo</p>
-                    <a href="/admin/routes" class="btn btn-primary">Abrir Routes</a>
+                    <h3>🔗 Manage routes</h3>
+                    <p>Add, edit, or remove app routes</p>
+                    <a href="/admin/routes" class="btn btn-primary">Open routes</a>
                 </div>
                 
                 <div class="action-card">
-                    <h3>💼 Gerenciar Products</h3>
-                    <p>Gerencie produtos bancários e serviços</p>
-                    <a href="/admin/products" class="btn btn-primary">Abrir Products</a>
+                    <h3>💼 Manage products</h3>
+                    <p>Banking products and services</p>
+                    <a href="/admin/products" class="btn btn-primary">Open products</a>
                 </div>
                 
                 <div class="action-card">
-                    <h3>🛍️ Gerenciar SKUs</h3>
-                    <p>Controle o catálogo do marketplace</p>
-                    <a href="/admin/skus" class="btn btn-primary">Abrir SKUs</a>
+                    <h3>🛍️ Manage SKUs</h3>
+                    <p>Marketplace catalog</p>
+                    <a href="/admin/skus" class="btn btn-primary">Open SKUs</a>
                 </div>
                 
                 <div class="action-card">
-                    <h3>🧠 Router Examples</h3>
-                    <p>Treinar detector de intenção (SEARCH vs CHAT)</p>
-                    <a href="/admin/router" class="btn btn-primary">Abrir Router</a>
+                    <h3>🧠 Router examples</h3>
+                    <p>Train the intent detector (SEARCH vs CHAT)</p>
+                    <a href="/admin/router" class="btn btn-primary">Open router</a>
                 </div>
 
                 <div class="action-card">
-                    <h3>🌱 Re-seed Database</h3>
-                    <p>Recarregar dados dos arquivos JSONL</p>
-                    <button onclick="reseed()" class="btn btn-warning">Executar Seed</button>
+                    <h3>🌱 Re-seed database</h3>
+                    <p>Reload data from JSONL seed files</p>
+                    <button onclick="reseed()" class="btn btn-warning">Run seed</button>
                 </div>
             </div>
 
             <!-- Feedback Section -->
             <div class="header-actions" style="margin-top: 40px; margin-bottom: 20px;">
-                <h2>🗣️ Fila de Feedback de Usuários</h2>
-                <button onclick="loadFeedback()" class="btn btn-secondary">🔄 Atualizar Fila</button>
+                <h2>🗣️ User feedback queue</h2>
+                <button onclick="loadFeedback()" class="btn btn-secondary">🔄 Refresh queue</button>
             </div>
 
             <div class="data-table" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
                 <table width="100%" style="text-align: left; color: #fff;">
                     <thead>
                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <th style="padding: 10px;">Data</th>
-                            <th style="padding: 10px;">Query do Usuário</th>
-                            <th style="padding: 10px;">Intent Identificado</th>
-                            <th style="padding: 10px;">Intent Esperado</th>
-                            <th style="padding: 10px; text-align: right;">Ações</th>
+                            <th style="padding: 10px;">Date</th>
+                            <th style="padding: 10px;">User query</th>
+                            <th style="padding: 10px;">Detected intent</th>
+                            <th style="padding: 10px;">Expected intent</th>
+                            <th style="padding: 10px; text-align: right;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="feedbackList">
-                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">Carregando fila...</td></tr>
+                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">Loading queue…</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -152,22 +152,22 @@
         }
         
         async function reseed() {
-            if (!confirm('Isso irá recarregar todos os dados. Continuar?')) return;
+            if (!confirm('This will reload all seed data. Continue?')) return;
 
             try {
                 const response = await fetch('/seed', { method: 'POST' });
                 const data = await response.json();
 
                 const counts = data.documents_seeded || {};
-                alert(`✅ Seed completo!\n\n` +
+                alert(`✅ Seed complete!\n\n` +
                       `Routes: ${counts.routes || 0}\n` +
                       `Products: ${counts.products || 0}\n` +
                       `SKUs: ${counts.skus || 0}\n` +
-                      `Router Examples: ${counts.router_examples || 0}\n\n` +
-                      `Tempo: ${data.elapsed_seconds}s`);
+                      `Router examples: ${counts.router_examples || 0}\n\n` +
+                      `Elapsed: ${data.elapsed_seconds}s`);
                 loadStats();
             } catch (error) {
-                alert('❌ Erro ao executar seed: ' + error.message);
+                alert('❌ Seed failed: ' + error.message);
             }
         }
 
@@ -178,7 +178,7 @@
 
                 const list = document.getElementById('feedbackList');
                 if (!data.feedback || data.feedback.length === 0) {
-                    list.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">Nenhum feedback pendente na fila. 🎉</td></tr>';
+                    list.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">No pending feedback. 🎉</td></tr>';
                     return;
                 }
 
@@ -194,8 +194,8 @@
                         <td style="padding: 10px;"><span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;">${item.detected_intent}</span></td>
                         <td style="padding: 10px;"><span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">${item.expected_intent}</span></td>
                         <td style="padding: 10px; text-align: right;">
-                            <button onclick='handleFeedbackAction(${JSON.stringify(item)}, "approve")' class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Aprovar & Retreinar</button>
-                            <button onclick='handleFeedbackAction(${JSON.stringify(item)}, "discard")' class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; background: #333;">Descartar</button>
+                            <button onclick='handleFeedbackAction(${JSON.stringify(item)}, "approve")' class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Approve &amp; retrain</button>
+                            <button onclick='handleFeedbackAction(${JSON.stringify(item)}, "discard")' class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; background: #333;">Discard</button>
                         </td>
                     `;
                     list.appendChild(tr);
@@ -215,11 +215,11 @@
                 const result = await response.json();
 
                 if (action === 'approve') {
-                    alert('✅ Rota atualizada e Inteligência re-treinada com sucesso!\n\n(Aviso: recarregue o Admin para atualizar as estatísticas)');
+                    alert('✅ Example updated and routers re-embedded.\n\n(Reload Admin to refresh stats.)');
                 }
                 loadFeedback();
             } catch (error) {
-                alert('Erro ao processar feedback: ' + error.message);
+                alert('Failed to process feedback: ' + error.message);
             }
         }
 
@@ -228,4 +228,3 @@
     </script>
 </body>
 </html>
-
