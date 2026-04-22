@@ -26,6 +26,7 @@ from src.search.autocomplete import setup_autocomplete
 from src.search.vectorizer import get_search_vectorizer
 from src.routers.language_detector import get_language_detector
 from src.routers.intent_router import get_semantic_router
+from src.routers.guard_router import get_guard_router
 from src.api import (
     health_router,
     seed_router,
@@ -98,6 +99,9 @@ async def lifespan(app: FastAPI):
     #    overwrite=False on normal restart (reuses existing Redis index — instant)
     for lang in ['pt', 'en', 'es']:
         get_semantic_router(lang, overwrite=need_overwrite)
+
+    # 4. Semantic guard (concierge only; same vectorizer / RedisVL)
+    get_guard_router(overwrite=need_overwrite)
 
     warm_elapsed = _time.time() - warm_start
     print(f"✅ All models pre-warmed in {warm_elapsed:.1f}s")

@@ -1,6 +1,6 @@
 # Multi-platform friendly (linux/amd64, linux/arm64): build with buildx, e.g.
 #   docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile \
-#     -t gacerioni/gabs-global-search-concierge-redis:v0.0.1 --push .
+#     -t gacerioni/gabs-global-search-concierge-redis:v0.0.42-gabs --push .
 
 FROM python:3.11-slim
 

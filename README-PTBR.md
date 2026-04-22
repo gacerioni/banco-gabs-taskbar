@@ -39,10 +39,11 @@ REDIS_URL=redis://localhost:6379/0
 ```
 
 ### 3. Suba o Container
+O `docker-compose.yml` baixa a **API na Docker Hub** e sobe **Redis 8.6** ao lado (porta **6380** no host; senha padrão `secret42` — use `REDIS_PASSWORD` no `.env` para mudar).
 ```bash
-docker-compose up -d --build
+docker compose up -d
 ```
-Isso fará o build da API em Python e iniciará o servidor web na porta 8000.
+A API escuta na **8000** dentro do container (mapeada para `8000` no host por padrão).
 
 ### 4. Auto-Seed (População Automática)
 Quando a API inicia, ela detecta automaticamente se os índices do RediSearch existem no seu banco. Caso não existam, o processo de "seed" rodará automaticamente em background (cria os índices, gera embeddings vetoriais, configura o autocomplete e salva os dados).

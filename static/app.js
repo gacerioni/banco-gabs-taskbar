@@ -18,6 +18,8 @@ const resultCountEl = document.getElementById('resultCount');
 
 // State
 const CONCIERGE_SESSION_KEY = 'redis_concierge_panel_session_id';
+const CONCIERGE_SESSION_PERSIST_KEY = 'redis_concierge_panel_session_id_persist';
+const CONCIERGE_SESSION_STICKY_KEY = 'redis_concierge_sticky_session';
 
 /** Tools exposed to the model (demo reference). */
 const DEMO_AGENT_TOOLS = [
@@ -34,18 +36,183 @@ let selectedIndex = -1;
 let currentResults = [];
 let lastQuery = '';
 let requestInFlight = false;
-let conciergeWelcomed = false;
+/** Shown once when opening concierge on an empty thread (no STM yet). */
+let conciergeTipShown = false;
+/** Last session id we hydrated from GET /api/concierge/history (avoid duplicate fetches). */
+let conciergeHydratedSid = null;
+
+function isStickySessionEnabled() {
+    try {
+        return localStorage.getItem(CONCIERGE_SESSION_STICKY_KEY) === '1';
+    } catch (_) {
+        return false;
+    }
+}
+
+function mirrorStickySession(sid) {
+    if (!sid) return;
+    try {
+        if (isStickySessionEnabled()) {
+            localStorage.setItem(CONCIERGE_SESSION_PERSIST_KEY, sid);
+        }
+    } catch (_) {}
+}
+
+/**
+ * Persist active concierge session id (bar + panel + cart/STM).
+ * When "Sticky" is on, also mirrors to localStorage so a new tab/reload can resume.
+ */
+function commitConciergeSessionId(sid) {
+    if (!sid) return;
+    try {
+        sessionStorage.setItem(CONCIERGE_SESSION_KEY, sid);
+        mirrorStickySession(sid);
+    } catch (_) {}
+}
 
 function getConciergeSessionId() {
-    let sid = sessionStorage.getItem(CONCIERGE_SESSION_KEY);
+    let sid = null;
+    try {
+        sid = sessionStorage.getItem(CONCIERGE_SESSION_KEY);
+    } catch (_) {}
+    if (!sid && isStickySessionEnabled()) {
+        try {
+            sid = localStorage.getItem(CONCIERGE_SESSION_PERSIST_KEY);
+            if (sid) {
+                sessionStorage.setItem(CONCIERGE_SESSION_KEY, sid);
+            }
+        } catch (_) {}
+    }
     if (!sid && typeof crypto !== 'undefined' && crypto.randomUUID) {
         sid = crypto.randomUUID();
-        sessionStorage.setItem(CONCIERGE_SESSION_KEY, sid);
+        commitConciergeSessionId(sid);
     } else if (!sid) {
         sid = 'sess_' + String(Date.now()) + '_' + String(Math.random()).slice(2, 10);
-        sessionStorage.setItem(CONCIERGE_SESSION_KEY, sid);
+        commitConciergeSessionId(sid);
     }
     return sid;
+}
+
+function syncDemoSessionInput() {
+    const inp = document.getElementById('demoSessionInput');
+    if (inp) inp.value = getConciergeSessionId() || '';
+}
+
+function notifyConciergeSessionSwitched() {
+    const wrap = document.getElementById('conciergeMessages');
+    if (!wrap) return;
+    const sid = getConciergeSessionId();
+    appendConciergeMessage(
+        'system',
+        `Session id updated — cart + STM use this thread (${sid ? sid.slice(0, 8) + '…' : '—'}).`
+    );
+}
+
+/**
+ * Load STM-backed turns from Redis and paint the concierge thread (survives refresh).
+ */
+async function ensureConciergeHistoryHydrated(force) {
+    const wrap = document.getElementById('conciergeMessages');
+    if (!wrap) return;
+    const sid = getConciergeSessionId();
+    if (!force && conciergeHydratedSid === sid) return;
+    wrap.innerHTML = '';
+    try {
+        const r = await fetch(`/api/concierge/history?session_id=${encodeURIComponent(sid)}`);
+        if (!r.ok) {
+            throw new Error(`HTTP ${r.status}`);
+        }
+        const data = await r.json();
+        const arr = Array.isArray(data.messages) ? data.messages : [];
+        for (const m of arr) {
+            if (m.role === 'user') {
+                appendConciergeMessage('user', m.content || '');
+            } else if (m.role === 'assistant') {
+                appendConciergeMessage('assistant', m.content || '');
+            } else if (m.role === 'tool') {
+                appendConciergeMessage('system', `[tool] ${m.content || ''}`);
+            }
+        }
+        if (data.cart) {
+            renderConciergeCart(data.cart);
+        }
+        conciergeHydratedSid = sid;
+    } catch (e) {
+        console.warn('Concierge history hydrate failed', e);
+        appendConciergeMessage('system', 'Could not load conversation history from Redis (check session id and server).');
+        conciergeHydratedSid = sid;
+    }
+}
+
+function wireDemoSessionControls() {
+    const inp = document.getElementById('demoSessionInput');
+    const apply = document.getElementById('demoSessionApply');
+    const neu = document.getElementById('demoSessionNew');
+    const copy = document.getElementById('demoSessionCopy');
+    const sticky = document.getElementById('demoSessionSticky');
+    if (!inp || !apply || !neu || !copy || !sticky) return;
+
+    try {
+        sticky.checked = isStickySessionEnabled();
+    } catch (_) {
+        sticky.checked = false;
+    }
+
+    apply.addEventListener('click', () => {
+        const raw = (inp.value || '').trim();
+        if (!raw) {
+            window.alert('Paste a non-empty session id (e.g. the UUID shown above).');
+            return;
+        }
+        if (raw.length > 80) {
+            window.alert('Session id is too long (max 80 chars).');
+            return;
+        }
+        commitConciergeSessionId(raw);
+        conciergeHydratedSid = null;
+        refreshDemoSessionId();
+        syncDemoSessionInput();
+        void ensureConciergeHistoryHydrated(true).then(() => notifyConciergeSessionSwitched());
+    });
+
+    neu.addEventListener('click', () => {
+        let sid = null;
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            sid = crypto.randomUUID();
+        } else {
+            sid = 'sess_' + String(Date.now()) + '_' + String(Math.random()).slice(2, 10);
+        }
+        commitConciergeSessionId(sid);
+        conciergeHydratedSid = null;
+        refreshDemoSessionId();
+        syncDemoSessionInput();
+        void ensureConciergeHistoryHydrated(true).then(() => notifyConciergeSessionSwitched());
+    });
+
+    copy.addEventListener('click', async () => {
+        const sid = getConciergeSessionId();
+        try {
+            await navigator.clipboard.writeText(sid);
+        } catch (_) {
+            inp.select();
+            document.execCommand('copy');
+        }
+    });
+
+    sticky.addEventListener('change', () => {
+        try {
+            if (sticky.checked) {
+                localStorage.setItem(CONCIERGE_SESSION_STICKY_KEY, '1');
+                mirrorStickySession(getConciergeSessionId());
+            } else {
+                localStorage.removeItem(CONCIERGE_SESSION_STICKY_KEY);
+                localStorage.removeItem(CONCIERGE_SESSION_PERSIST_KEY);
+            }
+        } catch (e) {
+            window.alert('Could not update sticky flag (private mode?).');
+            sticky.checked = false;
+        }
+    });
 }
 
 function escapeHtml(text) {
@@ -67,10 +234,12 @@ function demoSetText(id, text) {
 
 function refreshDemoSessionId() {
     demoSetText('demoSid', getConciergeSessionId() || '—');
+    syncDemoSessionInput();
 }
 
 function initDemoSidebar() {
     refreshDemoSessionId();
+    wireDemoSessionControls();
     const ul = document.getElementById('demoToolList');
     if (ul) {
         ul.innerHTML = DEMO_AGENT_TOOLS.map(
@@ -90,6 +259,18 @@ function initDemoSidebar() {
     }
 }
 
+function updateDemoGuardObservability(data) {
+    const route = data.guard_route;
+    const has = route != null && route !== '';
+    demoSetText('demoConcGuardRoute', has ? String(route) : '—');
+    const c = data.guard_confidence;
+    demoSetText('demoConcGuardConf', c != null ? `${(Number(c) * 100).toFixed(1)}%` : '—');
+    const b = data.guard_blocked;
+    demoSetText('demoConcGuardBlocked', b === true ? 'yes' : b === false ? 'no' : '—');
+    const gl = data.guard_latency_ms;
+    demoSetText('demoConcGuardLat', gl != null ? `${Number(gl).toFixed(1)} ms` : '—');
+}
+
 function updateDemoObservabilitySearch(data, clientLatency) {
     if (!document.getElementById('demoLastSearchQuery')) return;
     demoSetText('demoLastSearchQuery', data.query || '—');
@@ -106,6 +287,13 @@ function updateDemoObservabilitySearch(data, clientLatency) {
     } else {
         demoSetText('demoLastSearchTotal', '— (chat mode)');
         demoSetText('demoLastSearchCache', '—');
+        updateDemoGuardObservability(data);
+    }
+    if (data.intent === 'search') {
+        demoSetText('demoConcGuardRoute', '—');
+        demoSetText('demoConcGuardConf', '—');
+        demoSetText('demoConcGuardBlocked', '—');
+        demoSetText('demoConcGuardLat', '—');
     }
     const row = document.getElementById('demoLastSearchRouteRow');
     const hintEl = document.getElementById('demoLastSearchRoute');
@@ -129,6 +317,7 @@ function updateDemoObservabilityConcierge(payload) {
     const lines = cart.line_count != null ? cart.line_count : (Array.isArray(cart.items) ? cart.items.length : 0);
     const sub = cart.subtotal != null ? `R$ ${Number(cart.subtotal).toFixed(2)}` : '—';
     demoSetText('demoConcCart', `${lines} line(s) · ${sub}`);
+    updateDemoGuardObservability(payload);
     const pre = document.getElementById('demoConcTrace');
     const hint = document.getElementById('demoConcTraceHint');
     const trace = payload.tool_trace;
@@ -258,10 +447,11 @@ async function sendConciergeMessage(message) {
             throw new Error(detail || 'Request failed');
         }
         if (data.session_id) {
-            sessionStorage.setItem(CONCIERGE_SESSION_KEY, data.session_id);
+            commitConciergeSessionId(data.session_id);
         }
         removeConciergeTyping();
         appendConciergeMessage('assistant', data.reply || '(no response)');
+        conciergeHydratedSid = getConciergeSessionId();
         renderConciergeCart(data.cart || {});
         updateDemoObservabilityConcierge({
             provider: data.provider,
@@ -269,11 +459,16 @@ async function sendConciergeMessage(message) {
             latency_ms: data.latency_ms,
             cart: data.cart,
             tool_trace: data.tool_trace,
+            guard_route: data.guard_route,
+            guard_confidence: data.guard_confidence,
+            guard_blocked: data.guard_blocked,
+            guard_latency_ms: data.guard_latency_ms,
         });
         const meta = document.getElementById('conciergeMeta');
         if (meta) {
             const bits = [
                 data.language ? String(data.language).toUpperCase() : '',
+                data.guard_route ? `guard:${data.guard_route}` : '',
                 data.provider,
                 data.model,
                 data.latency_ms != null ? `${data.latency_ms} ms` : '',
@@ -290,35 +485,51 @@ async function sendConciergeMessage(message) {
     }
 }
 
-function openConciergePanelFromUser() {
+async function openConciergePanelFromUser() {
     const fab = document.getElementById('conciergeFab');
     const panel = document.getElementById('conciergePanel');
     if (!fab || !panel) return;
     panel.classList.remove('hidden');
     panel.classList.remove('concierge-panel--minimized');
     fab.classList.add('hidden');
-    if (!conciergeWelcomed) {
-        conciergeWelcomed = true;
-        appendConciergeMessage('system', 'Tip: ask about products, add to cart, or FAQ-style questions. Portuguese or English is fine.');
+    await ensureConciergeHistoryHydrated(false);
+    const wrap = document.getElementById('conciergeMessages');
+    if (!conciergeTipShown) {
+        conciergeTipShown = true;
+        if (wrap && wrap.childElementCount === 0) {
+            appendConciergeMessage('system', 'Tip: ask about products, add to cart, or FAQ-style questions. Portuguese or English is fine.');
+        }
     }
     document.getElementById('conciergeInput')?.focus();
 }
 
-function showBarRoutedConcierge(data) {
-    openConciergePanelFromUser();
-    if (data.query) {
-        appendConciergeMessage('user', data.query);
-    }
-    appendConciergeMessage('assistant', data.chat_response || '(no response)');
+async function showBarRoutedConcierge(data) {
     if (data.session_id) {
-        sessionStorage.setItem(CONCIERGE_SESSION_KEY, data.session_id);
+        commitConciergeSessionId(data.session_id);
     }
-    renderConciergeCart(data.cart || {});
+    conciergeHydratedSid = null;
+    await openConciergePanelFromUser();
     const meta = document.getElementById('conciergeMeta');
     if (meta) {
-        const bits = [data.chat_provider, data.chat_model, data.latency_ms != null ? `${data.latency_ms} ms` : ''].filter(Boolean);
+        const bits = [
+            data.guard_route ? `guard:${String(data.guard_route)}` : '',
+            data.chat_provider,
+            data.chat_model,
+            data.latency_ms != null ? `${data.latency_ms} ms` : '',
+        ].filter(Boolean);
         meta.textContent = bits.join(' · ');
     }
+    updateDemoObservabilityConcierge({
+        provider: data.chat_provider,
+        model: data.chat_model,
+        latency_ms: data.latency_ms,
+        cart: data.cart || {},
+        tool_trace: data.tool_trace,
+        guard_route: data.guard_route,
+        guard_confidence: data.guard_confidence,
+        guard_blocked: data.guard_blocked,
+        guard_latency_ms: data.guard_latency_ms,
+    });
 }
 
 function setupConciergePanel() {
@@ -330,7 +541,7 @@ function setupConciergePanel() {
     if (!fab || !panel) return;
 
     fab.addEventListener('click', () => {
-        openConciergePanelFromUser();
+        void openConciergePanelFromUser();
     });
 
     closeBtn?.addEventListener('click', () => {
@@ -544,7 +755,7 @@ async function performSearch(query) {
         const clientLatency = Math.round(endTime - startTime);
 
         if (data.session_id) {
-            sessionStorage.setItem(CONCIERGE_SESSION_KEY, data.session_id);
+            commitConciergeSessionId(data.session_id);
         }
 
         // Update stats
@@ -564,6 +775,10 @@ async function performSearch(query) {
                 latency_ms: data.latency_ms,
                 cart: data.cart,
                 tool_trace: data.tool_trace,
+                guard_route: data.guard_route,
+                guard_confidence: data.guard_confidence,
+                guard_blocked: data.guard_blocked,
+                guard_latency_ms: data.guard_latency_ms,
             });
         }
 
@@ -628,7 +843,7 @@ function updateStats(query, data, clientLatency) {
 
 function displaySearchResults(data) {
     if (data.intent === 'chat' && data.chat_response) {
-        showBarRoutedConcierge(data);
+        void showBarRoutedConcierge(data);
         if (resultsContainer) {
             resultsContainer.innerHTML = `
                 <div class="concierge-nudge">
@@ -864,6 +1079,24 @@ function updateDebugPanel(data, clientLatency) {
 
     if (debugClient) {
         debugClient.textContent = `${clientLatency.toFixed(0)}ms`;
+    }
+
+    const gr = document.getElementById('debugGuardRoute');
+    const gc = document.getElementById('debugGuardConf');
+    const gb = document.getElementById('debugGuardBlocked');
+    if (gr && gc && gb) {
+        if (data.intent === 'chat' && data.guard_route != null && data.guard_route !== '') {
+            gr.textContent = String(data.guard_route).toUpperCase();
+            gr.style.background = data.guard_blocked ? 'rgba(248, 113, 113, 0.35)' : 'rgba(52, 211, 153, 0.25)';
+            const gconf = data.guard_confidence;
+            gc.textContent = gconf != null ? `${(Number(gconf) * 100).toFixed(1)}%` : '—';
+            gb.textContent = data.guard_blocked === true ? 'YES' : data.guard_blocked === false ? 'no' : '—';
+        } else {
+            gr.textContent = '—';
+            gr.style.background = '';
+            gc.textContent = '—';
+            gb.textContent = '—';
+        }
     }
 
     const feedbackBtn = document.getElementById('feedbackBtn');

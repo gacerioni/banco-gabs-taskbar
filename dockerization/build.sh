@@ -1,45 +1,28 @@
-#!/bin/bash
-# Build and push multi-platform Docker image
+#!/usr/bin/env bash
+# Build & push from repo root (works no matter where you invoke this script from).
+set -euo pipefail
 
-set -e
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 
-# Configuration
-IMAGE_NAME="gacerioni/gabs-redis-taskbar-global-search"
-VERSION="v0.0.1-gabs"
-PLATFORMS="linux/amd64,linux/arm64"
+IMAGE_NAME="${IMAGE_NAME:-gacerioni/gabs-global-search-concierge-redis}"
+VERSION="${VERSION:-v0.0.42-gabs}"
+PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
+BUILDER="${BUILDER:-}"
 
-echo "🐳 Building Docker image: ${IMAGE_NAME}:${VERSION}"
-echo "📦 Platforms: ${PLATFORMS}"
-echo ""
-
-# Check if builder exists
-if ! docker buildx inspect mybuilder &> /dev/null; then
-    echo "🔧 Creating buildx builder..."
-    docker buildx create --name mybuilder --use
-    docker buildx inspect --bootstrap
+echo "Building ${IMAGE_NAME}:${VERSION} (context: ${ROOT})"
+echo "Platforms: ${PLATFORMS}"
+if [[ -n "$BUILDER" ]]; then
+  echo "Builder: ${BUILDER}"
+  docker buildx use "$BUILDER"
 fi
 
-# Use the builder
-docker buildx use mybuilder
-
-# Build and push
-echo "🚀 Building and pushing..."
 docker buildx build \
-    --platform ${PLATFORMS} \
-    -f Dockerfile \
-    -t ${IMAGE_NAME}:${VERSION} \
-    -t ${IMAGE_NAME}:latest \
-    --push \
-    ..
+  --platform "$PLATFORMS" \
+  -f Dockerfile \
+  -t "${IMAGE_NAME}:${VERSION}" \
+  -t "${IMAGE_NAME}:latest" \
+  --push \
+  .
 
-echo ""
-echo "✅ Image built and pushed successfully!"
-echo ""
-echo "📌 Tags:"
-echo "   - ${IMAGE_NAME}:${VERSION}"
-echo "   - ${IMAGE_NAME}:latest"
-echo ""
-echo "🏃 Run with:"
-echo "   docker run -d -p 8092:8092 -e REDIS_URL=redis://localhost:6379 ${IMAGE_NAME}:${VERSION}"
-echo ""
-
+echo "Done. Pushed ${IMAGE_NAME}:${VERSION} and ${IMAGE_NAME}:latest"

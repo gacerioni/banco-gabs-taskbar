@@ -1,27 +1,16 @@
-#!/bin/bash
-# Test local Docker build without pushing
+#!/usr/bin/env bash
+# Local image build (no push) — same context rules as build.sh
+set -euo pipefail
 
-set -e
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 
-IMAGE_NAME="redis-global-search-local"
-VERSION="test"
+IMAGE_NAME="${IMAGE_NAME:-redis-global-search-local}"
+VERSION="${VERSION:-test}"
 
-echo "🐳 Building local Docker image for testing..."
-echo ""
-
-# Build for current platform only (faster)
-docker build \
-    -f Dockerfile \
-    -t ${IMAGE_NAME}:${VERSION} \
-    ..
+echo "Building ${IMAGE_NAME}:${VERSION} from ${ROOT}..."
+docker build -f Dockerfile -t "${IMAGE_NAME}:${VERSION}" .
 
 echo ""
-echo "✅ Image built successfully!"
-echo ""
-echo "🏃 Testing with docker-compose:"
-echo "   cd dockerization && docker-compose up -d"
-echo ""
-echo "Or run standalone:"
-echo "   docker run -d -p 8092:8092 -e REDIS_URL=redis://host.docker.internal:6379 ${IMAGE_NAME}:${VERSION}"
-echo ""
-
+echo "Run stack: docker compose up -d"
+echo "Or: docker run -d -p 8000:8000 -e REDIS_URL=redis://... ${IMAGE_NAME}:${VERSION}"

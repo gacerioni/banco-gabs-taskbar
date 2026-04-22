@@ -187,6 +187,78 @@ body {
     line-height: 1.4;
 }
 
+.demo-session-advanced {
+    margin-top: 10px;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 8px 10px 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.demo-session-summary {
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    user-select: none;
+}
+
+.demo-session-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #0f172a;
+}
+
+.demo-session-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.demo-session-btn {
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #94a3b8;
+    background: #fff;
+    color: #0f172a;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.demo-session-btn:hover {
+    background: #f1f5f9;
+}
+
+.demo-session-btn--ghost {
+    font-weight: 500;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.demo-session-sticky {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #475569;
+    cursor: pointer;
+    user-select: none;
+}
+
+.demo-session-sticky input {
+    margin: 0;
+}
+
 .demo-pre {
     margin-top: 8px;
     padding: 8px;

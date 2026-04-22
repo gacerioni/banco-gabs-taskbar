@@ -113,6 +113,10 @@ class Config:
     CONCIERGE_STM_PREFIX: str = os.getenv("CONCIERGE_STM_PREFIX", "demo:stm")
     CONCIERGE_STM_INDEX: str = os.getenv("CONCIERGE_STM_INDEX", "idx:demo_stm_chat")
     CONCIERGE_STM_MAX_MESSAGES: int = int(os.getenv("CONCIERGE_STM_MAX_MESSAGES", "12"))
+
+    # Semantic guard (RedisVL) — concierge + bar chat only; not run on search intent
+    GUARD_ENABLED: bool = os.getenv("GUARD_ENABLED", "true").lower() in ("true", "1", "yes")
+    GUARD_BLOCK_MIN_CONFIDENCE: float = float(os.getenv("GUARD_BLOCK_MIN_CONFIDENCE", "0.52"))
     
     # CORS settings
     CORS_ORIGINS: list = os.getenv(

@@ -146,6 +146,9 @@ async def unified_search(
         }
         if chat_result.get("tool_trace") is not None:
             payload["tool_trace"] = chat_result["tool_trace"]
+        for _k, _v in chat_result.items():
+            if _k.startswith("guard_"):
+                payload[_k] = _v
         payload.update(_routing_meta(language, intent, confidence))
         return payload
     

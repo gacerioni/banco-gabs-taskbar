@@ -1,19 +1,43 @@
-# App only — point REDIS_URL at your Redis (Cloud, Stack, etc.).
-# Example:
-#   export REDIS_URL='redis://default:password@host:6379/0'
-#   docker compose up --build
+# App = image from Docker Hub. Redis 8.6 next to it (host :6380 → container :6379, passworded).
+# Override: REDIS_PASSWORD, APP_PORT, TASKBAR_IMAGE in .env
 
 services:
+  redis:
+    image: redis:8.6.2-bookworm
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --save
+      - "60"
+      - "1000"
+      - --requirepass
+      - "${REDIS_PASSWORD:-secret42}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-secret42}", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+    restart: unless-stopped
+
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: gacerioni/gabs-global-search-concierge-redis:latest
+    image: ${TASKBAR_IMAGE:-gacerioni/gabs-global-search-concierge-redis:latest}
+    pull_policy: always
     ports:
       - "${APP_PORT:-8000}:8000"
     environment:
-      REDIS_URL: ${REDIS_URL}
-      APP_HOST: ${APP_HOST:-0.0.0.0}
-      APP_PORT: ${APP_PORT:-8000}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-secret42}@redis:6379/0
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
       DEBUG: ${DEBUG:-false}
+    depends_on:
+      redis:
+        condition: service_healthy
     restart: unless-stopped
+
+volumes:
+  redis-data:

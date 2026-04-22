@@ -6,11 +6,13 @@ import time
 import uuid
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 from ...data import get_redis_client
 from ...chat import handle_chat_query
+from ...chat.stm_memory import list_concierge_stm_messages
+from ...cart.store import get_cart_snapshot
 from ...core.config import config
 from ...routers import detect_language
 
@@ -49,6 +51,38 @@ class ConciergeChatResponse(BaseModel):
     model: str
     latency_ms: float
     tool_trace: Optional[List[Dict[str, Any]]] = None
+    # RedisVL semantic guard (concierge only)
+    guard_route: Optional[str] = None
+    guard_confidence: Optional[float] = None
+    guard_distance: Optional[float] = None
+    guard_second_route: Optional[str] = None
+    guard_second_confidence: Optional[float] = None
+    guard_margin: Optional[float] = None
+    guard_latency_ms: Optional[float] = None
+    guard_blocked: Optional[bool] = None
+
+
+class ConciergeHistoryResponse(BaseModel):
+    """STM messages from Redis (LangChain) for rehydrating the concierge UI."""
+
+    session_id: str
+    messages: List[Dict[str, str]]
+    cart: Dict[str, Any]
+
+
+@router.get("/api/concierge/history", response_model=ConciergeHistoryResponse)
+async def concierge_history(
+    session_id: str = Query(..., min_length=4, max_length=80, description="Same session_id as chat/cart"),
+) -> ConciergeHistoryResponse:
+    """
+    Load conversation turns stored in Redis for this session so the browser can
+    repaint the thread after refresh (STM is server-side only).
+    """
+    redis_client = get_redis_client()
+    sid = session_id.strip()
+    messages = list_concierge_stm_messages(sid, limit=100)
+    cart = get_cart_snapshot(redis_client, sid)
+    return ConciergeHistoryResponse(session_id=sid, messages=messages, cart=cart)
 
 
 @router.post("/api/concierge/chat", response_model=ConciergeChatResponse)
@@ -84,4 +118,12 @@ async def concierge_chat(body: ConciergeChatRequest) -> ConciergeChatResponse:
         model=out.get("model", "none"),
         latency_ms=round(elapsed, 2),
         tool_trace=out.get("tool_trace"),
+        guard_route=out.get("guard_route"),
+        guard_confidence=out.get("guard_confidence"),
+        guard_distance=out.get("guard_distance"),
+        guard_second_route=out.get("guard_second_route"),
+        guard_second_confidence=out.get("guard_second_confidence"),
+        guard_margin=out.get("guard_margin"),
+        guard_latency_ms=out.get("guard_latency_ms"),
+        guard_blocked=out.get("guard_blocked"),
     )

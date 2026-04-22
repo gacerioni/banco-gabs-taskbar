@@ -13,7 +13,7 @@
             <span class="demo-sidebar-icon">📡</span>
             <div>
                 <strong>Observability</strong>
-                <div class="demo-sidebar-sub">Redis · intent · tools</div>
+                <div class="demo-sidebar-sub">Redis · intent · tools · guard</div>
             </div>
             <button type="button" class="demo-sidebar-toggle" id="demoSidebarToggle" title="Collapse panel" aria-expanded="true">⟨</button>
         </div>
@@ -21,6 +21,17 @@
             <section class="demo-sec">
                 <h4 class="demo-sec-title">Session (cart / STM)</h4>
                 <code class="demo-mono" id="demoSid">—</code>
+                <details class="demo-session-advanced">
+                    <summary class="demo-session-summary">Resume / override session (demo)</summary>
+                    <p class="demo-sec-note" style="margin-top:6px;">Same ID → same Redis cart + STM. Use <strong>Sticky</strong> to survive a full page reload in this browser.</p>
+                    <input type="text" id="demoSessionInput" class="demo-session-input" placeholder="Paste session UUID" maxlength="80" autocomplete="off" spellcheck="false" />
+                    <div class="demo-session-actions">
+                        <button type="button" class="demo-session-btn" id="demoSessionApply">Use session</button>
+                        <button type="button" class="demo-session-btn" id="demoSessionNew">New UUID</button>
+                        <button type="button" class="demo-session-btn demo-session-btn--ghost" id="demoSessionCopy">Copy</button>
+                    </div>
+                    <label class="demo-session-sticky"><input type="checkbox" id="demoSessionSticky" /> Sticky session (localStorage — survives reload)</label>
+                </details>
             </section>
             <section class="demo-sec">
                 <h4 class="demo-sec-title">Last search · bar</h4>
@@ -39,6 +50,10 @@
                 <div class="demo-kv"><span>Model</span><span id="demoConcModel">—</span></div>
                 <div class="demo-kv"><span>Latency</span><span id="demoConcLat">—</span></div>
                 <div class="demo-kv"><span>Cart</span><span id="demoConcCart">—</span></div>
+                <div class="demo-kv"><span>Guard route</span><span id="demoConcGuardRoute">—</span></div>
+                <div class="demo-kv"><span>Guard conf.</span><span id="demoConcGuardConf">—</span></div>
+                <div class="demo-kv"><span>Guard blocked</span><span id="demoConcGuardBlocked">—</span></div>
+                <div class="demo-kv"><span>Guard latency</span><span id="demoConcGuardLat">—</span></div>
                 <div class="demo-sec-note" id="demoConcTraceHint">Tool trace: set <code>DEBUG=true</code> on the server to see tool calls here.</div>
                 <pre class="demo-pre" id="demoConcTrace" hidden></pre>
             </section>
@@ -50,7 +65,7 @@
                 <h4 class="demo-sec-title">Redis keys (demo)</h4>
                 <ul class="demo-mini-list">
                     <li><code>demo:cart:&lt;session_id&gt;</code> — shopping cart</li>
-                    <li><code>demo:stm:*</code> — LangChain STM</li>
+                    <li><code>demo:stm:*</code> — LangChain STM (hydrate via <code>GET /api/concierge/history</code>)</li>
                     <li><code>cache:search:*</code> — hybrid search cache</li>
                     <li><code>demo:concierge:faq</code> — FAQ RAG</li>
                 </ul>
@@ -132,6 +147,18 @@
                     <div class="debug-item">
                         <span class="debug-label">Round-trip:</span>
                         <span id="debugClient" class="debug-value">-</span>
+                    </div>
+                    <div class="debug-item" id="debugGuardRow">
+                        <span class="debug-label">Guard (chat):</span>
+                        <span id="debugGuardRoute" class="debug-value badge">—</span>
+                    </div>
+                    <div class="debug-item" id="debugGuardConfRow">
+                        <span class="debug-label">Guard conf.:</span>
+                        <span id="debugGuardConf" class="debug-value">—</span>
+                    </div>
+                    <div class="debug-item" id="debugGuardBlockRow">
+                        <span class="debug-label">Blocked:</span>
+                        <span id="debugGuardBlocked" class="debug-value">—</span>
                     </div>
                 </div>
             </div>

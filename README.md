@@ -49,7 +49,7 @@ Unified API for integrations: `GET /api/search?q=...&session_id=<uuid>&use_opena
 ### Prerequisites
 
 - **Docker** and **Docker Compose**
-- **Redis 8+** with Search/JSON (and modules your deployment expects)—e.g. [Redis Cloud](https://redis.com/try-free/) or **Redis Stack** locally.
+- **Redis 8.6+** with Search/JSON in the runtime (e.g. [Redis Cloud](https://redis.com/try-free/) or the optional **bundled Redis** in Compose below).
 
 ### Configure
 
@@ -65,11 +65,15 @@ REDIS_URL=redis://default:your-password@your-host:6379/0
 
 ### Run
 
+`docker-compose.yml` pulls the **app from Docker Hub** and runs **Redis 8.6** beside it (Redis on host **6380**, default password `secret42` — override with `REDIS_PASSWORD` in `.env`).
+
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
 
-Open **http://localhost:8000** (or the host port you mapped with `APP_PORT`).
+For **Redis Cloud / external Redis only**, run the app container yourself (`docker run …`) or replace the `app` service with your image and set `REDIS_URL` accordingly.
+
+Open **http://localhost:8000** (or the host port from `APP_PORT`).
 
 ### Run a pre-built image only
 

@@ -14,6 +14,7 @@ from ...data.synonyms import apply_synonyms_to_all
 from ...search.autocomplete import setup_autocomplete
 from ...search.query_cache import invalidate_search_cache
 from ...routers.intent_router import force_reload_routers
+from ...routers.guard_router import force_reload_guard_router
 
 
 router = APIRouter()
@@ -47,9 +48,11 @@ async def seed() -> Dict[str, Any]:
         print("🔍 Setting up autocomplete...")
         ac_count = setup_autocomplete(redis_client)
 
-        # Force reload semantic routers
+        # Force reload semantic routers + concierge guard
         print("🧠 Reloading semantic routers...")
         force_reload_routers()
+        print("🛡️  Reloading semantic guard router...")
+        force_reload_guard_router()
 
         elapsed = time.time() - start
         
